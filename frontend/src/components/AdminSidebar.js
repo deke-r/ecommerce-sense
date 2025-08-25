@@ -1,0 +1,57 @@
+import { Link, useLocation } from "react-router-dom"
+
+const AdminSidebar = () => {
+  const location = useLocation()
+
+  const menuItems = [
+    {
+      path: "/admin/dashboard",
+      icon: "bi-speedometer2",
+      label: "Dashboard",
+    },
+    {
+      path: "/admin/products",
+      icon: "bi-box-seam",
+      label: "Products",
+    },
+    {
+      path: "/admin/orders",
+      icon: "bi-cart-check",
+      label: "Orders",
+    },
+    {
+      path: "/admin/users",
+      icon: "bi-people",
+      label: "Users",
+    },
+  ]
+
+  return (
+    <div className="bg-dark text-white" style={{ minHeight: "100vh", width: "250px" }}>
+      <div className="p-3">
+        <h4 className="text-center mb-4">
+          <i className="bi bi-shield-check me-2"></i>
+          Admin Panel
+        </h4>
+
+        <nav className="nav flex-column">
+          {menuItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`nav-link text-white py-3 px-3 rounded mb-1 ${
+                location.pathname === item.path ? "bg-primary" : ""
+              }`}
+              style={{ textDecoration: "none" }}
+            >
+              <i className={`${item.icon} me-2`}></i>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </div>
+  )
+}
+
+export default AdminSidebar
