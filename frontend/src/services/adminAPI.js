@@ -61,6 +61,14 @@ export const adminUsersAPI = {
   updateStatus: (id, status) => adminAPI.put(`/admin/users/${id}`, { status }),
 }
 
+// Admin Categories API
+export const adminCategoriesAPI = {
+  getAll: () => adminAPI.get("/admin/categories"),
+  create: (data) => adminAPI.post("/admin/categories", data),
+  update: (id, data) => adminAPI.put(`/admin/categories/${id}`, data),
+  delete: (id) => adminAPI.delete(`/admin/categories/${id}`),
+}
+
 // Admin Dashboard API
 export const adminDashboardAPI = {
   getStats: () => adminAPI.get("/admin/dashboard"),

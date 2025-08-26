@@ -103,7 +103,7 @@ const Profile = () => {
     return (
       <div className="container mt-5">
         <div className="text-center">
-          <div className="spinner-border text-primary" role="status">
+          <div className="spinner-border text-blue" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -115,23 +115,23 @@ const Profile = () => {
     <div className="container mt-4">
       <div className="row justify-content-center">
         <div className="col-lg-8">
-          <div className="card">
+          <div className="card rounded-4">
             <div className="card-header">
-              <h3 className="mb-0">
-                <i className="bi bi-person-circle me-2"></i>
+              <h4 className="mb-0">
+                <i className="bi bi-person-circle me-2 text-blue"></i>
                 My Profile
-              </h3>
+              </h4>
             </div>
             <div className="card-body">
               <form onSubmit={handleSubmit}>
                 <div className="row">
                   <div className="col-md-6 mb-3">
-                    <label htmlFor="name" className="form-label">
+                    <label htmlFor="name" className="form-label  ms-2 f_14 fw-semibold ">
                       Full Name
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted"
                       id="name"
                       name="name"
                       value={formData.name}
@@ -140,21 +140,21 @@ const Profile = () => {
                     />
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label htmlFor="email" className="form-label">
+                    <label htmlFor="email" className="form-label  ms-2 f_14 fw-semibold ">
                       Email
                     </label>
-                    <input type="email" className="form-control" id="email" value={user.email} disabled />
-                    <small className="text-muted">Email cannot be changed</small>
+                    <input type="email" className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted" id="email" value={user.email} disabled />
+                    <small className="text-muted f_13 fw-semibold ms-2">Email cannot be changed</small>
                   </div>
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="phone" className="form-label">
+                  <label htmlFor="phone" className="form-label  ms-2 f_14 fw-semibold ">
                     Phone Number
                   </label>
                   <input
                     type="tel"
-                    className="form-control"
+                    className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted"
                     id="phone"
                     name="phone"
                     value={formData.phone}
@@ -165,13 +165,13 @@ const Profile = () => {
                 <div className="mb-3">
                   <div className="form-check">
                     <input
-                      className="form-check-input"
+                      className="form-check-input f_14 ms-2"
                       type="checkbox"
                       id="changePassword"
                       checked={showPasswordForm}
                       onChange={(e) => setShowPasswordForm(e.target.checked)}
                     />
-                    <label className="form-check-label" htmlFor="changePassword">
+                    <label className="form-check-label f_14 ms-1 fw-semibold" htmlFor="changePassword">
                       Change Password
                     </label>
                   </div>
@@ -180,12 +180,12 @@ const Profile = () => {
                 {showPasswordForm && (
                   <div className="row">
                     <div className="col-md-4 mb-3">
-                      <label htmlFor="currentPassword" className="form-label">
+                      <label htmlFor="currentPassword" className="form-label  ms-2 f_14 fw-semibold ">
                         Current Password
                       </label>
                       <input
                         type="password"
-                        className="form-control"
+                        className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted"
                         id="currentPassword"
                         name="currentPassword"
                         value={formData.currentPassword}
@@ -193,12 +193,12 @@ const Profile = () => {
                       />
                     </div>
                     <div className="col-md-4 mb-3">
-                      <label htmlFor="newPassword" className="form-label">
+                      <label htmlFor="newPassword" className="form-label  ms-2 f_14 fw-semibold ">
                         New Password
                       </label>
                       <input
                         type="password"
-                        className="form-control"
+                        className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted"
                         id="newPassword"
                         name="newPassword"
                         value={formData.newPassword}
@@ -206,12 +206,12 @@ const Profile = () => {
                       />
                     </div>
                     <div className="col-md-4 mb-3">
-                      <label htmlFor="confirmPassword" className="form-label">
+                      <label htmlFor="confirmPassword" className="form-label  ms-2 f_14 fw-semibold ">
                         Confirm New Password
                       </label>
                       <input
                         type="password"
-                        className="form-control"
+                        className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted"
                         id="confirmPassword"
                         name="confirmPassword"
                         value={formData.confirmPassword}
@@ -222,7 +222,7 @@ const Profile = () => {
                 )}
 
                 <div className="d-grid">
-                  <button type="submit" className="btn btn-primary" disabled={updating}>
+                  <button type="submit" className="btn bg-blue text-light f_14 rounded-4 fw-semibold" disabled={updating}>
                     {updating ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2"></span>
@@ -240,7 +240,7 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Account Info */}
+          {/* Account Info
           <div className="card mt-4">
             <div className="card-header">
               <h5 className="mb-0">Account Information</h5>
@@ -263,7 +263,7 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

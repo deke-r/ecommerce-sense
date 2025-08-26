@@ -1,6 +1,24 @@
 -- Additional seed data for testing
 USE ecommerce_db;
 
+-- Insert sample categories
+INSERT INTO categories (name, description, is_active) VALUES 
+('Electronics', 'Electronic devices and gadgets', 1),
+('Computers', 'Computers, laptops, and accessories', 1),
+('Mobile Devices', 'Smartphones, tablets, and mobile accessories', 1),
+('Audio', 'Headphones, speakers, and audio equipment', 1),
+('Photography', 'Cameras, lenses, and photography gear', 1),
+('Gaming', 'Gaming consoles, games, and accessories', 1),
+('Fitness', 'Fitness trackers and health monitoring devices', 1),
+('Accessories', 'Various tech accessories and peripherals', 1);
+
+-- Update existing products with category assignments
+UPDATE products SET category_id = 1 WHERE title IN ('Smartphone', 'Laptop', 'Headphones', 'Watch', 'Camera', 'Tablet');
+UPDATE products SET category_id = 2 WHERE title IN ('Gaming Mouse', 'Mechanical Keyboard', 'Monitor', 'USB-C Hub');
+UPDATE products SET category_id = 1 WHERE title IN ('Wireless Speaker', 'Webcam');
+UPDATE products SET category_id = 6 WHERE title IN ('Fitness Tracker');
+UPDATE products SET category_id = 8 WHERE title IN ('Power Bank');
+
 -- Insert more sample products for better testing
 INSERT INTO products (title, description, price, image) VALUES 
 ('Gaming Mouse', 'High-precision gaming mouse with RGB lighting', 79.99, 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400'),

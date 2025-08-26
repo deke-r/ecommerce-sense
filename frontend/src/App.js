@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, useLocation } from "react-router-dom"
 import ErrorBoundary from "./components/ErrorBoundary"
 import Navbar from "./components/Navbar"
 import Home from "./pages/Home"
@@ -17,13 +17,20 @@ import AdminDashboard from "./pages/admin/AdminDashboard"
 import AdminProducts from "./pages/admin/AdminProducts"
 import AdminOrders from "./pages/admin/AdminOrders"
 import AdminUsers from "./pages/admin/AdminUsers"
+import AdminCategories from "./pages/admin/AdminCategories"
 import AdminProtectedRoute from "./components/AdminProtectedRoute"
 
 function App() {
+  const location = useLocation()
+  
+  // Check if current route is admin route
+  const isAdminRoute = location.pathname.startsWith('/admin')
+  
   return (
     <ErrorBoundary>
       <div className="App">
-        <Navbar />
+        {/* Only show navbar for non-admin routes */}
+        {!isAdminRoute && <Navbar />}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<ProductDetails />} />
@@ -96,6 +103,14 @@ function App() {
             element={
               <AdminProtectedRoute>
                 <AdminUsers />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/categories"
+            element={
+              <AdminProtectedRoute>
+                <AdminCategories />
               </AdminProtectedRoute>
             }
           />

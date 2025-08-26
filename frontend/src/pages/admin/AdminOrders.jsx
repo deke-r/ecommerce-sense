@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import AdminSidebar from "../../components/AdminSidebar"
 import { adminOrdersAPI } from "../../services/adminAPI"
+import AdminNavbar from "../../components/AdminNavbar"
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([])
@@ -49,12 +49,11 @@ const AdminOrders = () => {
   }
 
   return (
-    <div className="d-flex">
-      <AdminSidebar />
-      <div className="flex-grow-1">
-        <div className="bg-white shadow-sm p-3">
-          <h1 className="h3 mb-0">Orders Management</h1>
-        </div>
+ <>
+
+ <AdminNavbar/>
+ 
+      
 
         <div className="p-4">
           {loading ? (
@@ -123,8 +122,7 @@ const AdminOrders = () => {
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </>
   )
 }
 

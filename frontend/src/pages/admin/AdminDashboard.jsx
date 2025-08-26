@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import AdminSidebar from "../../components/AdminSidebar"
+
 import { adminDashboardAPI } from "../../services/adminAPI"
+import AdminNavbar from "../../components/AdminNavbar"
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({})
@@ -35,31 +36,26 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="d-flex">
-        <AdminSidebar />
-        <div className="flex-grow-1 p-4">
+     
+
+      <>
+      <AdminNavbar/>
           <div className="text-center">
             <div className="spinner-border text-primary" role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
           </div>
-        </div>
-      </div>
+      </>
+     
     )
   }
 
   return (
-    <div className="d-flex">
-      <AdminSidebar />
-      <div className="flex-grow-1">
-        {/* Header */}
-        <div className="bg-white shadow-sm p-3 d-flex justify-content-between align-items-center">
-          <h1 className="h3 mb-0">Dashboard</h1>
-          <button className="btn btn-outline-danger" onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right me-2"></i>
-            Logout
-          </button>
-        </div>
+   
+      <>
+
+      <AdminNavbar/>
+      
 
         <div className="p-4">
           {/* Stats Cards */}
@@ -174,8 +170,10 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+
+      </>
+
+     
   )
 }
 
