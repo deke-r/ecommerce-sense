@@ -9,31 +9,15 @@ const router = express.Router()
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = "uploads/categories"
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true })
-    }
-    cb(null, uploadPath)
+    cb(null, "uploads/")
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9)
-    cb(null, "category-" + uniqueSuffix + path.extname(file.originalname))
+    cb(null,uniqueSuffix + '-'+ file.originalname)
   },
 })
 
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, true)
-    } else {
-      cb(new Error("Only image files are allowed!"), false)
-    }
-  },
-})
+const upload = multer({ storage: storage })
 
 // Get all orders (Admin only)
 router.get("/orders", verifyToken, verifyAdmin, async (req, res) => {
@@ -177,7 +161,7 @@ router.get("/categories", verifyToken, verifyAdmin, async (req, res) => {
   try {
     const con = getConnection()
     const [categories] = await con.execute(
-      "SELECT id, name, description, image, is_active, created_at, updated_at FROM categories ORDER BY created_at DESC",
+      "SELECT id, name, description, image_url, is_active, created_at, updated_at FROM categories ORDER BY created_at DESC",
     )
 
     // Add full image URLs
@@ -196,6 +180,7 @@ router.get("/categories", verifyToken, verifyAdmin, async (req, res) => {
 // Create new category
 router.post("/categories", verifyToken, verifyAdmin, upload.single("image"), async (req, res) => {
   try {
+ 
     const { name, description, is_active } = req.body
 
     if (!name || name.trim() === "") {
@@ -214,7 +199,7 @@ router.post("/categories", verifyToken, verifyAdmin, upload.single("image"), asy
     const imageName = req.file ? req.file.filename : null
 
     const [result] = await con.execute(
-      "INSERT INTO categories (name, description, image, is_active) VALUES (?, ?, ?, ?)",
+      "INSERT INTO categories (name, description,  image_url, is_active) VALUES (?, ?, ?, ?)",
       [name.trim(), description || null, imageName, is_active !== undefined ? is_active : 1],
     )
 
@@ -239,6 +224,8 @@ router.post("/categories", verifyToken, verifyAdmin, upload.single("image"), asy
 // Update category
 router.put("/categories/:id", verifyToken, verifyAdmin, upload.single("image"), async (req, res) => {
   try {
+
+   
     const { id } = req.params
     const { name, description, is_active } = req.body
 
@@ -249,7 +236,7 @@ router.put("/categories/:id", verifyToken, verifyAdmin, upload.single("image"), 
     const con = getConnection()
 
     // Check if category exists and get current image
-    const [categories] = await con.execute("SELECT id, image FROM categories WHERE id = ?", [id])
+    const [categories] = await con.execute("SELECT id,  image_url FROM categories WHERE id = ?", [id])
 
     if (categories.length === 0) {
       return res.status(404).json({ message: "Category not found" })
@@ -265,13 +252,13 @@ router.put("/categories/:id", verifyToken, verifyAdmin, upload.single("image"), 
       return res.status(400).json({ message: "Category with this name already exists" })
     }
 
-    let imageName = categories[0].image
+    let imageName = categories[0].image_url 
 
     // If new image is uploaded
     if (req.file) {
       // Delete old image if exists
       if (imageName) {
-        const oldImagePath = path.join("uploads/categories", imageName)
+        const oldImagePath = path.join("uploads", imageName)
         if (fs.existsSync(oldImagePath)) {
           fs.unlinkSync(oldImagePath)
         }
@@ -279,7 +266,7 @@ router.put("/categories/:id", verifyToken, verifyAdmin, upload.single("image"), 
       imageName = req.file.filename
     }
 
-    await con.execute("UPDATE categories SET name = ?, description = ?, image = ?, is_active = ? WHERE id = ?", [
+    await con.execute("UPDATE categories SET name = ?, description = ?,  image_url = ?, is_active = ? WHERE id = ?", [
       name.trim(),
       description || null,
       imageName,
@@ -301,7 +288,7 @@ router.delete("/categories/:id", verifyToken, verifyAdmin, async (req, res) => {
     const con = getConnection()
 
     // Check if category exists and get image
-    const [categories] = await con.execute("SELECT id, image FROM categories WHERE id = ?", [id])
+    const [categories] = await con.execute("SELECT id,  image_url FROM categories WHERE id = ?", [id])
 
     if (categories.length === 0) {
       return res.status(404).json({ message: "Category not found" })

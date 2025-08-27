@@ -61,5 +61,79 @@ router.put("/profile", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Server error" })
   }
 })
+router.get("/categories", async (req, res) => {
+  try {
+    const con = getConnection()
+    const isActive = 1
+    const [categories] = await con.execute(
+      "SELECT id, name, description, image_url FROM categories WHERE is_active=? ORDER BY created_at DESC ",
+      [isActive]
+    )
+
+    res.json({ categories: categories })
+  } catch (error) {
+    console.error("Get categories error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
+
+router.get("/productsbycategory/:categoryId", async (req, res) => {
+  try {
+  
+    const con = getConnection()
+    const categoryId = req.params.categoryId
+console.log(categoryId)
+    const [products] = await con.execute(
+      `SELECT p.id, p.category_id, p.title, p.description, p.stocks, p.price, p.image, 
+              p.created_at, p.updated_at,
+              pi.image_url AS extra_image
+       FROM products p
+       LEFT JOIN product_images pi ON p.id = pi.product_id
+       WHERE p.category_id = ?
+       ORDER BY p.created_at DESC`,
+      [categoryId]
+    )
+
+console.log(products)
+
+    res.json({ products: products })
+  } catch (error) {
+    console.error("Get products by category error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
+
+router.get("/products", async (req, res) => {
+  try {
+    const con = getConnection()
+
+    const query = `
+      SELECT p.id, p.category_id, p.title, p.description, p.stocks, p.price, p.image,
+             p.created_at, p.updated_at, p.rating,
+             pi.image_url AS extra_image,
+             c.name as category_name
+      FROM products p 
+      LEFT JOIN product_images pi ON p.id = pi.product_id 
+      LEFT JOIN categories c ON p.category_id = c.id
+      ORDER BY p.created_at DESC
+    `
+
+    const [products] = await con.execute(query)
+
+    console.log(`Fetched ${products.length} products`)
+
+    res.json({
+      products: products,
+      totalProducts: products.length,
+    })
+  } catch (error) {
+    console.error("Get all products error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
+
 
 module.exports = router

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { productsAPI } from "../services/api"
 import ProductCard from "../components/ProductCard"
+import CategoryNavigation from "../components/CategoryNavigation"
 
 const Home = () => {
   const [products, setProducts] = useState([])
@@ -43,7 +44,13 @@ const Home = () => {
   }
 
   return (
+
+    <>
+
+    <CategoryNavigation/>
     <div className="container mt-4">
+
+
 
 
 
@@ -106,6 +113,8 @@ const Home = () => {
 )}
 
     </div>
+    </>
+
   )
 }
 

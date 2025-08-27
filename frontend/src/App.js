@@ -19,6 +19,8 @@ import AdminOrders from "./pages/admin/AdminOrders"
 import AdminUsers from "./pages/admin/AdminUsers"
 import AdminCategories from "./pages/admin/AdminCategories"
 import AdminProtectedRoute from "./components/AdminProtectedRoute"
+import ProductsByCategory from "./pages/ProductsByCategory"
+import AllProducts from "./pages/AllProducts"
 
 function App() {
   const location = useLocation()
@@ -33,10 +35,15 @@ function App() {
         {!isAdminRoute && <Navbar />}
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/product/:id/" element={<ProductDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+
+
+          <Route path="/products/:id/:name" element={<ProductsByCategory />} />
+          <Route path="/products" element={<AllProducts />} />
+
 
           {/* Protected Routes */}
           <Route
