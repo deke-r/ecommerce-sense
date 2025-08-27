@@ -21,41 +21,99 @@ const upload = multer({ storage })
 // Get all products with images
 router.get("/", async (req, res) => {
   try {
-    const con = getConnection()
+    const con = getConnection();
     const [products] = await con.execute(`
-      SELECT p.*, 
-             GROUP_CONCAT(pi.image_url ORDER BY pi.id ASC) as additional_image_urls,
-             GROUP_CONCAT(pi.id ORDER BY pi.id ASC) as additional_image_ids
+      SELECT 
+        p.*, 
+        GROUP_CONCAT(DISTINCT pi.image_url ORDER BY pi.id ASC) AS additional_image_urls,
+        GROUP_CONCAT(DISTINCT pi.id ORDER BY pi.id ASC) AS additional_image_ids,
+        GROUP_CONCAT(DISTINCT pr.id) AS review_ids,
+        GROUP_CONCAT(DISTINCT pr.user_id) AS review_user_ids,
+        GROUP_CONCAT(DISTINCT pr.star) AS review_stars, 
+        GROUP_CONCAT(DISTINCT pr.comment) AS review_comments,
+        GROUP_CONCAT(DISTINCT pr.created_at) AS review_dates
       FROM products p
       LEFT JOIN product_images pi ON p.id = pi.product_id
+      LEFT JOIN reviews pr ON p.id = pr.product_id
       GROUP BY p.id
-      ORDER BY p.created_at DESC
-    `)
+      ORDER BY p.created_at DESC;
+    `);
 
-    // Process products to include additional images array
-    const processedProducts = products.map(product => {
-      const productData = { ...product }
+    const processedProducts = products.map((product) => {
+      const productData = { ...product };
+
+      // ✅ Additional images
       if (product.additional_image_urls) {
-        const imageUrls = product.additional_image_urls.split(',')
-        const imageIds = product.additional_image_ids.split(',').map(id => parseInt(id))
-        productData.additional_images = imageUrls.map((url, index) => ({
-          id: imageIds[index],
-          image_url: url
-        }))
-      } else {
-        productData.additional_images = []
-      }
-      delete productData.additional_image_urls
-      delete productData.additional_image_ids
-      return productData
-    })
+        const imageUrls = product.additional_image_urls.split(",");
+        const imageIds = product.additional_image_ids
+          ? product.additional_image_ids.split(",").map((id) => parseInt(id))
+          : [];
 
-    res.json({ products: processedProducts })
+        productData.additional_images = imageUrls.map((url, index) => ({
+          id: imageIds[index] || null,
+          image_url: url,
+        }));
+      } else {
+        productData.additional_images = [];
+      }
+
+      // ✅ Reviews
+      if (product.review_ids) {
+        const ids = product.review_ids ? product.review_ids.split(",") : [];
+        const userIds = product.review_user_ids
+          ? product.review_user_ids.split(",")
+          : [];
+        const stars = product.review_stars ? product.review_stars.split(",") : [];
+        const comments = product.review_comments
+          ? product.review_comments.split(",")
+          : [];
+        const dates = product.review_dates
+          ? product.review_dates.split(",")
+          : [];
+
+        productData.reviews = ids.map((id, index) => ({
+          id: parseInt(id),
+          user_id: parseInt(userIds[index]) || null,
+          rating: parseInt(stars[index]) || 0,
+          comment: comments[index] || "",
+          created_at: dates[index] || null,
+        }));
+
+        // ✅ Add average rating & total reviews
+        if (stars.length > 0) {
+          const total = stars.reduce((sum, s) => sum + parseInt(s || 0), 0);
+          productData.average_rating = total / stars.length;
+          productData.total_reviews = stars.length;
+        } else {
+          productData.average_rating = 0;
+          productData.total_reviews = 0;
+        }
+      } else {
+        productData.reviews = [];
+        productData.average_rating = 0;
+        productData.total_reviews = 0;
+      }
+
+      // cleanup
+      delete productData.additional_image_urls;
+      delete productData.additional_image_ids;
+      delete productData.review_ids;
+      delete productData.review_user_ids;
+      delete productData.review_stars;
+      delete productData.review_comments;
+      delete productData.review_dates;
+
+      return productData;
+    });
+
+    res.json({ products: processedProducts });
   } catch (error) {
-    console.error("Get products error:", error)
-    res.status(500).json({ message: "Server error" })
+    console.error("Get products error:", error);
+    res.status(500).json({ message: "Server error" });
   }
-})
+});
+
+
 
 // Get product by ID with images
 router.get("/:id", async (req, res) => {

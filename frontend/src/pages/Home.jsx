@@ -93,8 +93,8 @@ const Home = () => {
           price={product.price}
           oldPrice={product.oldPrice}
           discount={product.discount}
-          rating={product.rating || 0}
-          reviews={product.reviews || 0}
+          rating={product.average_rating || 0}   // ✅ average from backend
+          reviews={product.reviews ? product.reviews.length : 0} 
         />
       </div>
     </div>

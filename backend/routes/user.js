@@ -107,30 +107,107 @@ console.log(products)
 
 router.get("/products", async (req, res) => {
   try {
-    const con = getConnection()
+    console.log('hit')
+    const con = getConnection();
 
     const query = `
-      SELECT p.id, p.category_id, p.title, p.description, p.stocks, p.price, p.image,
-             p.created_at, p.updated_at, p.rating,
-             pi.image_url AS extra_image,
-             c.name as category_name
-      FROM products p 
-      LEFT JOIN product_images pi ON p.id = pi.product_id 
+      SELECT 
+        p.id, 
+        p.category_id, 
+        p.title, 
+        p.description, 
+        p.stocks, 
+        p.price, 
+        p.image,
+        p.created_at, 
+        p.updated_at,
+        c.name as category_name,
+        pi.image_url AS extra_image,
+
+        -- aggregate reviews
+        IFNULL(AVG(r.star_count), 0) AS rating,
+        COUNT(r.id) AS reviews
+
+      FROM products p
+      LEFT JOIN product_images pi ON p.id = pi.product_id
       LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN reviews r ON p.id = r.product_id
+
+      GROUP BY p.id, p.category_id, p.title, p.description, p.stocks, p.price, 
+               p.image, p.created_at, p.updated_at, c.name, pi.image_url
+
       ORDER BY p.created_at DESC
-    `
+    `;
 
-    const [products] = await con.execute(query)
-
-    console.log(`Fetched ${products.length} products`)
+    const [products] = await con.execute(query);
+console.log(products)
+    console.log(`Fetched ${products.length} products`);
 
     res.json({
-      products: products,
+      products,
       totalProducts: products.length,
-    })
+    });
   } catch (error) {
-    console.error("Get all products error:", error)
-    res.status(500).json({ message: "Server error" })
+    console.error("Get all products error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
+
+
+
+
+router.post("/reviews", verifyToken, async (req, res) => {
+  const { product_id, star, comment } = req.body;
+  const user_id = req.user.id;
+  const con = getConnection()
+
+  try {
+    const [rows] = await con.execute(
+      "SELECT id FROM reviews WHERE product_id = ? AND user_id = ?",
+      [product_id, user_id]
+    );
+
+    if (rows.length > 0) {
+      return res.status(400).json({ message: "Review already submitted" });
+    }
+
+    // insert new review
+    await con.execute(
+      "INSERT INTO reviews (product_id, user_id, star, comment, created_at) VALUES (?, ?, ?, ?, NOW())",
+      [product_id, user_id, star, comment]
+    );
+
+    return res.status(201).json({ message: "Review submitted successfully" });
+  } catch (error) {
+    console.error("❌ Error submitting review:", error);
+    return res.status(500).json({ message: "Error submitting review" });
+  }
+});
+
+
+
+
+router.get("/reviews/:productId", async (req, res) => {
+  try {
+    const con = getConnection()
+    const { productId } = req.params
+
+    const [reviews] = await con.execute(
+      `SELECT r.id, r.product_id, r.user_id, r.star, r.comment, r.created_at, u.name as user_name
+       FROM reviews r
+       JOIN users u ON r.user_id = u.id
+       WHERE r.product_id = ?
+       ORDER BY r.created_at DESC`,
+      [productId]
+    )
+
+    res.json({ success: true, reviews })
+  } catch (error) {
+    console.error("❌ Get reviews error:", error)
+    res.status(500).json({ success: false, message: "Server error" })
   }
 })
 
