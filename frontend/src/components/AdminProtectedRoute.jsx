@@ -1,10 +1,20 @@
 import { Navigate } from "react-router-dom"
+import { jwtDecode } from "jwt-decode"
 
 const AdminProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("adminToken")
-  const user = JSON.parse(localStorage.getItem("adminUser") || "{}")
+  let payload = null
 
-  if (!token || user.role !== "admin") {
+  if (token) {
+    try {
+      payload = jwtDecode(token)
+    } catch {
+      payload = null
+    }
+  }
+
+  const now = Math.floor(Date.now() / 1000)
+  if (!token || !payload || payload.exp <= now || payload.role !== "admin") {
     return <Navigate to="/admin/login" replace />
   }
 

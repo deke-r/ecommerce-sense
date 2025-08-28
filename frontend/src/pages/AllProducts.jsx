@@ -221,7 +221,7 @@ filtered = filtered.filter((product) => (product.average_rating || 0) >= minRati
                 <div key={product.id} className={styles.productItem}>
                   <div onClick={() => handleProductClick(product.id)} className={styles.productClickable}>
                     <ProductCard
-                      image={product.image || "/diverse-products-still-life.png"}
+                                image={`${process.env.REACT_APP_IMAGE_URL}/${product.image}`}
                       title={product.title}
                       price={product.price}
                       oldPrice={product.old_price}

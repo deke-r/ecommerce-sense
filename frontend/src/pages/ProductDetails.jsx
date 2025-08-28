@@ -190,7 +190,7 @@ const ProductDetails = () => {
         <div className={styles.productSection}>
           <div className={styles.imageContainer}>
             <img
-              src={product.image || "/placeholder.svg?height=500&width=500&query=product"}
+                       src={`${process.env.REACT_APP_IMAGE_URL}/${product.image}`}
               className={styles.productImage}
               alt={product.title}
             />

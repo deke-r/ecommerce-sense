@@ -212,7 +212,7 @@ const AdminProducts = () => {
                         <tr key={product.id}>
                           <td>
                             <img
-                              src={product.image || "/placeholder.svg?height=50&width=50&query=product"}
+                              src={`${process.env.REACT_APP_IMAGE_URL}/${product.image}`}
                               alt={product.title}
                               style={{ width: "50px", height: "50px", objectFit: "cover" }}
                               className="rounded"
@@ -224,7 +224,7 @@ const AdminProducts = () => {
                                 product.additional_images.slice(0, 3).map((image, index) => (
                                   <img
                                     key={index}
-                                    src={image.image_url}
+                                    src={`${process.env.REACT_APP_IMAGE_URL}/${image.image_url}`}
                                     alt={`${product.title} ${index + 1}`}
                                     style={{ width: "40px", height: "40px", objectFit: "cover" }}
                                     className="rounded"
@@ -357,7 +357,7 @@ const AdminProducts = () => {
                           name="stocks"
                           value={formData.stocks}
                           onChange={handleInputChange}
-                          required
+                          
                         />
                         <small className="form-text text-muted">
                           Available quantity in stock
@@ -378,7 +378,7 @@ const AdminProducts = () => {
                           name="main_image"
                           accept="image/*"
                           onChange={handleInputChange}
-                          required
+                          
                         />
                         <small className="form-text text-muted">
                           This will be the primary image displayed for the product.

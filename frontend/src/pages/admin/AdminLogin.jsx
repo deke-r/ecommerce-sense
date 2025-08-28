@@ -27,8 +27,14 @@ const AdminLogin = () => {
     
     try {
       const response = await adminAuthAPI.login(data)
+      const user = response?.data?.user
+
+      if (!user || user.role !== "admin") {
+        setError("Only admin accounts can access the admin panel.")
+        return
+      }
+
       localStorage.setItem("adminToken", response.data.token)
-      localStorage.setItem("adminUser", JSON.stringify(response.data.admin))
       navigate("/admin/dashboard")
     } catch (error) {
       setError(error.response?.data?.message || "Login failed. Please try again.")

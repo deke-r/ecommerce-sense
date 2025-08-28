@@ -2,48 +2,34 @@
 
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { cartAPI } from "../services/api"
-import { ShoppingCart, User, LogOut, Package, Home } from "lucide-react"
+import { User, LogOut } from "lucide-react"
 import styles from "../style/navbar.module.css"
+import { jwtDecode } from "jwt-decode"
 
 const AdminNavbar = () => {
-  const [user, setUser] = useState(null)
-  const [cartCount, setCartCount] = useState(0)
+  const [admin, setAdmin] = useState(null)
   const navigate = useNavigate()
   const location = useLocation()
 
   useEffect(() => {
-    const userData = localStorage.getItem("user")
-    if (userData) {
-      setUser(JSON.parse(userData))
-      fetchCartCount()
-    }
-
-    const handleCartUpdate = () => {
-      if (localStorage.getItem("user")) {
-        fetchCartCount()
-      }
-    }
-
-    window.addEventListener("cartUpdated", handleCartUpdate)
-    return () => window.removeEventListener("cartUpdated", handleCartUpdate)
-  }, [])
-
-  const fetchCartCount = async () => {
+    const token = localStorage.getItem("adminToken")
     try {
-      const response = await cartAPI.getItems()
-      setCartCount(response.data.cartItems.length)
-    } catch (error) {
-      console.error("Error fetching cart count:", error)
+      const payload = token ? jwtDecode(token) : null
+      if (payload && payload.role === "admin") {
+        setAdmin({ name: payload.name || "Admin" })
+      } else {
+        setAdmin(null)
+      }
+    } catch {
+      setAdmin(null)
     }
-  }
+  }, [location.pathname])
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    setUser(null)
-    setCartCount(0)
-    navigate("/")
+    localStorage.removeItem("adminToken")
+    localStorage.removeItem("adminUser")
+    setAdmin(null)
+    navigate("/admin/login")
   }
 
   const isActive = (path) => (location.pathname === path ? styles.active : "")
@@ -51,12 +37,10 @@ const AdminNavbar = () => {
   return (
     <nav className={`navbar navbar-expand-lg py-3 position-sticky top-0 z-3 navbar-light bg-white shadow-sm ${styles.navbarCustom}`}>
       <div className="container-fluid">
-        {/* Brand Logo */}
         <Link className="navbar-brand d-flex align-items-center fw-semibold f_14 text-uppercase text-muted" to="/admin/dashboard">
          Admin Panel
         </Link>
 
-        {/* Toggler for Offcanvas */}
         <button
           className="navbar-toggler d-flex d-lg-none order-3 p-2"
           type="button"
@@ -67,11 +51,9 @@ const AdminNavbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Offcanvas Menu */}
         <div className="offcanvas offcanvas-end" tabIndex="-1" id="bdNavbar">
           <div className="offcanvas-header px-4 pb-0">
             <Link className="navbar-brand" to="/">
-              {/* <img src="/images/main-logo.png" alt="Logo" className={styles.logo} /> */}
               Logo
             </Link>
             <button
@@ -84,7 +66,6 @@ const AdminNavbar = () => {
 
           <div className="offcanvas-body">
           <ul className="navbar-nav ms-auto text-uppercase align-items-center pe-3">
-
               <li className="nav-item">
                 <Link className={`nav-link f_13 fw-semibold me-4 ${isActive("/admin/dashboard")}`} to="/admin/dashboard">
                   Dashboard
@@ -106,10 +87,8 @@ const AdminNavbar = () => {
                 </Link>
               </li>
 
-
-              {/* User / Profile */}
               <li className="nav-item dropdown">
-                {user ? (
+                {admin ? (
                   <>
                     <a
                       className="nav-link dropdown-toggle f_13 fw-semibold text-muted d-flex align-items-center"
@@ -118,7 +97,7 @@ const AdminNavbar = () => {
                       data-bs-toggle="dropdown"
                     >
                       <User size={16} className="me-1" />
-                      {user.name}
+                      {admin.name}
                     </a>
                     <ul className="dropdown-menu dropdown-menu-end shadow-sm">
                       <li>
@@ -126,7 +105,6 @@ const AdminNavbar = () => {
                           <User size={16} className="me-2" /> Profile
                         </Link>
                       </li>
-                     
                       <li>
                         <hr className="dropdown-divider" />
                       </li>
@@ -137,31 +115,7 @@ const AdminNavbar = () => {
                       </li>
                     </ul>
                   </>
-                ) : (
-                  <>
-                    <a
-                      className="nav-link me-4 d-flex align-items-center"
-                      href="#"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                    >
-                      <User size={20} className="me-1" />
-                      
-                    </a>
-                    <ul className="dropdown-menu  rounded-0 dropdown-menu-end shadow-sm">
-                      <li>
-                        <Link className="dropdown-item f_13 fw-semibold text-muted" to="/login">
-                          Login
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item f_13 fw-semibold text-muted" to="/signup">
-                          Sign Up
-                        </Link>
-                      </li>
-                    </ul>
-                  </>
-                )}
+                ) : null}
               </li>
             </ul>
           </div>

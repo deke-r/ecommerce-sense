@@ -88,7 +88,7 @@ const Home = () => {
     <div key={product.id} className="col-lg-3 col-md-6 mb-4">
       <div onClick={() => handleProductClick(product.id)} style={{ cursor: "pointer" }}>
         <ProductCard
-          image={product.image || "/placeholder.svg?height=250&width=400&query=product"}
+          image={`${process.env.REACT_APP_IMAGE_URL}/${product.image}`}
           title={product.title}
           price={product.price}
           oldPrice={product.oldPrice}

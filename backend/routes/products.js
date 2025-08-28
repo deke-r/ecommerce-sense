@@ -142,106 +142,225 @@ router.get("/:id", async (req, res) => {
 })
 
 // Add product with main image and additional images
-router.post("/", verifyToken, verifyAdmin, upload.fields([
-  { name: 'main_image', maxCount: 1 },
-  { name: 'additional_images', maxCount: 10 }
-]), async (req, res) => {
-  try {
-    const { title, description, price, category_id } = req.body
-    const mainImage = req.files?.main_image?.[0]
-    const additionalImages = req.files?.additional_images || []
+// router.post("/", verifyToken, verifyAdmin, upload.fields([
+//   { name: 'main_image', maxCount: 1 },
+//   { name: 'additional_images', maxCount: 10 }
+// ]), async (req, res) => {
+//   try {
+//     const { title, description, price, category_id } = req.body
+//     const mainImage = req.files?.main_image?.[0]
+//     const additionalImages = req.files?.additional_images || []
 
-    if (!title || !price) {
-      return res.status(400).json({ message: "Title and price are required" })
-    }
+//     if (!title || !price) {
+//       return res.status(400).json({ message: "Title and price are required" })
+//     }
 
-    const mainImageUrl = mainImage ? `/uploads/${mainImage.filename}` : null
+//     const mainImageUrl = mainImage ? `/uploads/${mainImage.filename}` : null
 
-    const con = getConnection()
+//     const con = getConnection()
 
-    // Insert product
-    const [result] = await con.execute(
-      "INSERT INTO products (title, description, price, category_id, image) VALUES (?, ?, ?, ?, ?)",
-      [title, description, price, category_id || null, mainImageUrl]
-    )
+//     // Insert product
+//     const [result] = await con.execute(
+//       "INSERT INTO products (title, description, price, category_id, image) VALUES (?, ?, ?, ?, ?)",
+//       [title, description, price, category_id || null, mainImageUrl]
+//     )
 
-    const productId = result.insertId
+//     const productId = result.insertId
 
-    // Insert additional images if provided
-    if (additionalImages.length > 0) {
-      const imageValues = additionalImages.map(file => [productId, `/uploads/${file.filename}`])
-      await con.execute(
-        "INSERT INTO product_images (product_id, image_url) VALUES ?",
-        [imageValues]
-      )
-    }
+//     // Insert additional images if provided
+//     if (additionalImages.length > 0) {
+//       const imageValues = additionalImages.map(file => [productId, `/uploads/${file.filename}`])
+//       await con.execute(
+//         "INSERT INTO product_images (product_id, image_url) VALUES ?",
+//         [imageValues]
+//       )
+//     }
 
-    // Get the created product with images
-    const [products] = await con.execute("SELECT * FROM products WHERE id = ?", [productId])
-    const [additionalImagesResult] = await con.execute(
-      "SELECT * FROM product_images WHERE product_id = ? ORDER BY id ASC",
-      [productId]
-    )
+//     // Get the created product with images
+//     const [products] = await con.execute("SELECT * FROM products WHERE id = ?", [productId])
+//     const [additionalImagesResult] = await con.execute(
+//       "SELECT * FROM product_images WHERE product_id = ? ORDER BY id ASC",
+//       [productId]
+//     )
 
-    const product = products[0]
-    product.additional_images = additionalImagesResult
+//     const product = products[0]
+//     product.additional_images = additionalImagesResult
 
-    res.status(201).json({
-      message: "Product added successfully",
-      product
-    })
-  } catch (error) {
-    console.error("Add product error:", error)
-    res.status(500).json({ message: "Server error" })
-  }
-})
+//     res.status(201).json({
+//       message: "Product added successfully",
+//       product
+//     })
+//   } catch (error) {
+//     console.error("Add product error:", error)
+//     res.status(500).json({ message: "Server error" })
+//   }
+// })
 
 // Update product with main image and additional images
-router.put("/:id", verifyToken, verifyAdmin, upload.fields([
-  { name: 'main_image', maxCount: 1 },
-  { name: 'additional_images', maxCount: 10 }
-]), async (req, res) => {
-  try {
-    const { id } = req.params
-    const { title, description, price, category_id } = req.body
-    const mainImage = req.files?.main_image?.[0]
-    const additionalImages = req.files?.additional_images || []
+// router.put("/:id", verifyToken, verifyAdmin, upload.fields([
+//   { name: 'main_image', maxCount: 1 },
+//   { name: 'additional_images', maxCount: 10 }
+// ]), async (req, res) => {
+//   try {
+//     const { id } = req.params
+//     const { title, description, price, category_id } = req.body
+//     const mainImage = req.files?.main_image?.[0]
+//     const additionalImages = req.files?.additional_images || []
 
+//     const con = getConnection()
+
+//     // Check if product exists
+//     const [existingProducts] = await con.execute("SELECT * FROM products WHERE id = ?", [id])
+//     if (existingProducts.length === 0) {
+//       return res.status(404).json({ message: "Product not found" })
+//     }
+
+//     const mainImageUrl = mainImage ? `/uploads/${mainImage.filename}` : existingProducts[0].image
+
+//     // Update product
+//     await con.execute(
+//       "UPDATE products SET title = ?, description = ?, price = ?, category_id = ?, image = ? WHERE id = ?",
+//       [title, description, price, category_id || null, mainImageUrl, id]
+//     )
+
+//     // Handle additional images
+//     if (additionalImages.length > 0) {
+//       // Delete existing additional images
+//       await con.execute("DELETE FROM product_images WHERE product_id = ?", [id])
+      
+//       // Insert new additional images
+//       const imageValues = additionalImages.map(file => [id, `/uploads/${file.filename}`])
+//       await con.execute(
+//         "INSERT INTO product_images (product_id, image_url) VALUES ?",
+//         [imageValues]
+//       )
+//     }
+
+//     res.json({ message: "Product updated successfully" })
+//   } catch (error) {
+//     console.error("Update product error:", error)
+//     res.status(500).json({ message: "Server error" })
+//   }
+// })
+
+router.post(
+  "/",
+  upload.fields([
+    { name: "main_image", maxCount: 1 },
+    { name: "additional_images", maxCount: 10 },
+  ]),
+  async (req, res) => {
+    const { title, description, category_id, price, stocks } = req.body
+    const mainImage = req.files["main_image"] ? req.files["main_image"][0] : null
+    const additional_images = req.files["additional_images"] || []
     const con = getConnection()
 
-    // Check if product exists
-    const [existingProducts] = await con.execute("SELECT * FROM products WHERE id = ?", [id])
-    if (existingProducts.length === 0) {
-      return res.status(404).json({ message: "Product not found" })
-    }
-
-    const mainImageUrl = mainImage ? `/uploads/${mainImage.filename}` : existingProducts[0].image
-
-    // Update product
-    await con.execute(
-      "UPDATE products SET title = ?, description = ?, price = ?, category_id = ?, image = ? WHERE id = ?",
-      [title, description, price, category_id || null, mainImageUrl, id]
-    )
-
-    // Handle additional images
-    if (additionalImages.length > 0) {
-      // Delete existing additional images
-      await con.execute("DELETE FROM product_images WHERE product_id = ?", [id])
-      
-      // Insert new additional images
-      const imageValues = additionalImages.map(file => [id, `/uploads/${file.filename}`])
-      await con.execute(
-        "INSERT INTO product_images (product_id, image_url) VALUES ?",
-        [imageValues]
+    try {
+      // ✅ Insert product details with correct column names
+      const [result] = await con.execute(
+        "INSERT INTO products (title, description, category_id, price, stocks, image) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          title || null,
+          description || null,
+          category_id || null,
+          price || null,
+          stocks || 0,
+          mainImage ? `${mainImage.filename}` : null,
+        ]
       )
-    }
 
-    res.json({ message: "Product updated successfully" })
-  } catch (error) {
-    console.error("Update product error:", error)
-    res.status(500).json({ message: "Server error" })
+      const productId = result.insertId
+
+      // ✅ Insert additional images if provided
+      if (additional_images.length > 0) {
+        const imageValues = additional_images.map((file) => [
+          productId,
+          `${file.filename}`,
+        ])
+
+        await con.query(
+          "INSERT INTO product_images (product_id, image_url) VALUES ?",
+          [imageValues]
+        )
+      }
+
+      res.status(201).json({ message: "Product added successfully!" })
+    } catch (err) {
+      console.error("Add product error:", err)
+      res.status(500).json({ error: "Failed to add product" })
+    }
   }
-})
+)
+
+
+
+// -------------------- UPDATE PRODUCT --------------------
+router.put(
+  "/:id",
+  upload.fields([
+    { name: "main_image", maxCount: 1 },
+    { name: "additional_images", maxCount: 10 }, // ✅ match exactly
+  ]),
+  async (req, res) => {
+    const { id } = req.params
+    const { title, description, category_id, price } = req.body
+    const mainImage = req.files["main_image"] ? req.files["main_image"][0] : null
+    const additional_images = req.files["additional_images"] || []
+
+    try {
+      const con = getConnection()
+
+      // Check product exists
+      const [existing] = await con.execute(
+        "SELECT image FROM products WHERE id = ?",
+        [id]
+      )
+
+      if (existing.length === 0) {
+        return res.status(404).json({ error: "Product not found" })
+      }
+
+      // Update product (if no new image, keep old one)
+      await con.execute(
+        "UPDATE products SET title=?, description=?, category_id=?, price=?, image=? WHERE id=?",
+        [
+          title,
+          description,
+          category_id || null,
+          price,
+          mainImage ? `${mainImage.filename}` : existing[0].image,
+          id,
+        ]
+      )
+
+      // Handle additional images
+      if (additional_images.length > 0) {
+        // Delete old additional images
+        await con.execute("DELETE FROM product_images WHERE product_id = ?", [
+          id,
+        ])
+
+        // Insert new ones
+        const imageValues = additional_images.map((file) => [
+          id,
+          `${file.filename}`,
+        ])
+
+        await con.query(
+          "INSERT INTO product_images (product_id, image_url) VALUES ?",
+          [imageValues]
+        )
+      }
+
+      res.json({ message: "Product updated successfully!" })
+    } catch (err) {
+      console.error("Update product error:", err)
+      res.status(500).json({ error: "Failed to update product" })
+    }
+  }
+)
+
+
 
 // Delete product (Admin only)
 router.delete("/:id", verifyToken, verifyAdmin, async (req, res) => {

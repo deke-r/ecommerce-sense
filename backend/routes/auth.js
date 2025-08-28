@@ -17,6 +17,7 @@ const generateOTP = () => {
 }
 
 // User Signup
+// Signup
 router.post("/signup", async (req, res) => {
   try {
     const { name, email, phone, password } = req.body
@@ -38,15 +39,17 @@ router.post("/signup", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Insert user
-    const [result] = await con.execute("INSERT INTO users (name, email, phone, password) VALUES (?, ?, ?, ?)", [
-      name,
-      email,
-      phone,
-      hashedPassword,
-    ])
+    const [result] = await con.execute(
+      "INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)",
+      [name, email, phone, hashedPassword, "user"]
+    )
 
-    // Generate token
-    const token = generateToken(result.insertId)
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: result.insertId, role: "user", name, email },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    )
 
     res.status(201).json({
       message: "User created successfully",
@@ -65,7 +68,7 @@ router.post("/signup", async (req, res) => {
   }
 })
 
-// User Login
+// Login
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body
@@ -97,8 +100,12 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" })
     }
 
-    // Generate token
-    const token = generateToken(user.id)
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user.id, role: user.role, name: user.name, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    )
 
     res.json({
       message: "Login successful",
