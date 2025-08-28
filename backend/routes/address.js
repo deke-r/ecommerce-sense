@@ -1,110 +1,131 @@
 const express = require("express")
+const router = express.Router()
 const { getConnection } = require("../config/database")
 const { verifyToken } = require("../middleware/auth")
 
-const router = express.Router()
-
-// Add new address
-router.post("/", verifyToken, async (req, res) => {
-  try {
-    const { name, phone, street, city, pincode, state } = req.body
-
-    if (!name || !phone || !street || !city || !pincode || !state) {
-      return res.status(400).json({ message: "All address fields are required" })
-    }
-
-    const con = getConnection()
-    const [result] = await con.execute(
-      "INSERT INTO addresses (user_id, name, phone, street, city, pincode, state) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [req.user.id, name, phone, street, city, pincode, state],
-    )
-
-    res.status(201).json({
-      message: "Address added successfully",
-      address: {
-        id: result.insertId,
-        name,
-        phone,
-        street,
-        city,
-        pincode,
-        state,
-      },
-    })
-  } catch (error) {
-    console.error("Add address error:", error)
-    res.status(500).json({ message: "Server error" })
-  }
-})
-
-// Get user addresses
+// GET /api/addresses - Get all addresses for authenticated user
 router.get("/", verifyToken, async (req, res) => {
   try {
     const con = getConnection()
-    const [addresses] = await con.execute("SELECT * FROM addresses WHERE user_id = ? ORDER BY created_at DESC", [
-      req.user.id,
-    ])
+    const userId = req.user.id
 
-    res.json({ addresses })
+    const [addresses] = await con.execute(
+      `SELECT id, user_id, full_name, phone, street, landmark, city, state, pincode, is_default, created_at, updated_at 
+       FROM addresses 
+       WHERE user_id = ? 
+       ORDER BY created_at DESC`,
+      [userId],
+    )
+
+    res.json({ success: true, addresses })
   } catch (error) {
     console.error("Get addresses error:", error)
-    res.status(500).json({ message: "Server error" })
+    res.status(500).json({ success: false, message: "Server error" })
   }
 })
 
-// Update address
+// POST /api/addresses - Add new address
+router.post("/", verifyToken, async (req, res) => {
+  try {
+    const con = getConnection()
+    const user_id = req.user.id
+    const { full_name, phone, street, landmark, city, state, pincode, is_default } = req.body
+
+    // If this is set as default, remove default from other addresses
+    if (is_default) {
+      await con.execute("UPDATE addresses SET is_default = FALSE WHERE user_id = ?", [user_id])
+    }
+
+    const [result] = await con.execute(
+      `INSERT INTO addresses (user_id, full_name, phone, street, landmark, city, state, pincode, is_default) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [user_id, full_name, phone, street, landmark || null, city, state, pincode, is_default || false],
+    )
+
+    res.json({ success: true, message: "Address added successfully", addressId: result.insertId })
+  } catch (error) {
+    console.error("Add address error:", error)
+    res.status(500).json({ success: false, message: "Server error" })
+  }
+})
+
+// PUT /api/addresses/:id - Update address
 router.put("/:id", verifyToken, async (req, res) => {
   try {
-    const { id } = req.params
-    const { name, phone, street, city, pincode, state } = req.body
-
     const con = getConnection()
+    const addressId = req.params.id
+    const user_id = req.user.id
+    const { full_name, phone, street, landmark, city, state, pincode, is_default } = req.body
 
-    // Check if address belongs to user
-    const [existingAddresses] = await con.execute("SELECT id FROM addresses WHERE id = ? AND user_id = ?", [
-      id,
-      req.user.id,
-    ])
+    const [existingAddress] = await con.execute("SELECT user_id FROM addresses WHERE id = ?", [addressId])
+    if (existingAddress.length === 0 || existingAddress[0].user_id !== user_id) {
+      return res.status(403).json({ success: false, message: "Access denied. Address not found or not owned by user." })
+    }
 
-    if (existingAddresses.length === 0) {
-      return res.status(404).json({ message: "Address not found" })
+    // If this is set as default, remove default from other addresses
+    if (is_default) {
+      await con.execute("UPDATE addresses SET is_default = FALSE WHERE user_id = ? AND id != ?", [user_id, addressId])
     }
 
     await con.execute(
-      "UPDATE addresses SET name = ?, phone = ?, street = ?, city = ?, pincode = ?, state = ? WHERE id = ?",
-      [name, phone, street, city, pincode, state, id],
+      `UPDATE addresses 
+       SET full_name = ?, phone = ?, street = ?, landmark = ?, city = ?, state = ?, pincode = ?, is_default = ?
+       WHERE id = ?`,
+      [full_name, phone, street, landmark || null, city, state, pincode, is_default || false, addressId],
     )
 
-    res.json({ message: "Address updated successfully" })
+    res.json({ success: true, message: "Address updated successfully" })
   } catch (error) {
     console.error("Update address error:", error)
-    res.status(500).json({ message: "Server error" })
+    res.status(500).json({ success: false, message: "Server error" })
   }
 })
 
-// Delete address
+// DELETE /api/addresses/:id - Delete address
 router.delete("/:id", verifyToken, async (req, res) => {
   try {
-    const { id } = req.params
     const con = getConnection()
+    const addressId = req.params.id
+    const user_id = req.user.id
 
-    // Check if address belongs to user
-    const [existingAddresses] = await con.execute("SELECT id FROM addresses WHERE id = ? AND user_id = ?", [
-      id,
-      req.user.id,
-    ])
-
-    if (existingAddresses.length === 0) {
-      return res.status(404).json({ message: "Address not found" })
+    const [existingAddress] = await con.execute("SELECT user_id FROM addresses WHERE id = ?", [addressId])
+    if (existingAddress.length === 0 || existingAddress[0].user_id !== user_id) {
+      return res.status(403).json({ success: false, message: "Access denied. Address not found or not owned by user." })
     }
 
-    await con.execute("DELETE FROM addresses WHERE id = ?", [id])
+    await con.execute("DELETE FROM addresses WHERE id = ?", [addressId])
 
-    res.json({ message: "Address deleted successfully" })
+    res.json({ success: true, message: "Address deleted successfully" })
   } catch (error) {
     console.error("Delete address error:", error)
-    res.status(500).json({ message: "Server error" })
+    res.status(500).json({ success: false, message: "Server error" })
   }
 })
+
+// PATCH /api/address/:id/default - Set address as default
+router.patch("/:id/default", verifyToken, async (req, res) => {
+  try {
+    const con = getConnection()
+    const addressId = req.params.id
+    const user_id = req.user.id
+
+    const [existingAddress] = await con.execute("SELECT user_id FROM addresses WHERE id = ?", [addressId])
+    if (existingAddress.length === 0 || existingAddress[0].user_id !== user_id) {
+      return res.status(403).json({ success: false, message: "Access denied. Address not found or not owned by user." })
+    }
+
+    // Remove default from all user's addresses
+    await con.execute("UPDATE addresses SET is_default = FALSE WHERE user_id = ?", [user_id])
+
+    // Set this one as default
+    await con.execute("UPDATE addresses SET is_default = TRUE WHERE id = ?", [addressId])
+
+    res.json({ success: true, message: "Default address updated successfully" })
+  } catch (error) {
+    console.error("Set default address error:", error)
+    res.status(500).json({ success: false, message: "Server error" })
+  }
+})
+
 
 module.exports = router

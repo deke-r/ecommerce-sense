@@ -48,7 +48,9 @@ const AllProducts = () => {
     filtered = filtered.filter((product) => product.price >= priceRange[0] && product.price <= priceRange[1])
 
     // Filter by rating
-    filtered = filtered.filter((product) => (product.rating || 0) >= minRating)
+    // Filter by rating
+filtered = filtered.filter((product) => (product.average_rating || 0) >= minRating)
+
 
     // Sort products
     switch (sortBy) {
@@ -59,7 +61,7 @@ const AllProducts = () => {
         filtered.sort((a, b) => b.price - a.price)
         break
       case "rating":
-        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        filtered.sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0))
         break
       case "name":
         filtered.sort((a, b) => a.title.localeCompare(b.title))

@@ -21,6 +21,7 @@ import AdminCategories from "./pages/admin/AdminCategories"
 import AdminProtectedRoute from "./components/AdminProtectedRoute"
 import ProductsByCategory from "./pages/ProductsByCategory"
 import AllProducts from "./pages/AllProducts"
+import Addresses from "./pages/Addresses"
 
 function App() {
   const location = useLocation()
@@ -43,6 +44,7 @@ function App() {
 
           <Route path="/products/:id/:name" element={<ProductsByCategory />} />
           <Route path="/products" element={<AllProducts />} />
+          <Route path="/user/addresses" element={<Addresses />} />
 
 
           {/* Protected Routes */}

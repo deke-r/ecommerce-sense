@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { cartAPI } from "../services/api"
-import { ShoppingCart, User, LogOut, Package, Home } from "lucide-react"
+import { ShoppingCart, User, LogOut, Package,MapPinPlus , Home } from "lucide-react"
 import styles from "../style/navbar.module.css"
 
 const Navbar = () => {
@@ -95,11 +95,7 @@ const Navbar = () => {
                   Products
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link className={`nav-link f_13 fw-semibold me-4 ${isActive("/orders")}`} to="/orders">
-                  Orders
-                </Link>
-              </li>
+         
 
               {/* Cart */}
               <li className="nav-item position-relative me-4">
@@ -136,6 +132,11 @@ const Navbar = () => {
                       <li>
                         <Link className="dropdown-item f_13 fw-semibold text-muted" to="/orders">
                           <Package size={16} className="me-2" /> My Orders
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item f_13 fw-semibold text-muted" to="/user/addresses">
+                          <MapPinPlus  size={16} className="me-2" /> My Address
                         </Link>
                       </li>
                       <li>
