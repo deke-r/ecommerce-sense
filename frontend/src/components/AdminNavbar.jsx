@@ -71,6 +71,14 @@ const AdminNavbar = () => {
                   Dashboard
                 </Link>
               </li>
+
+              <li className="nav-item">
+                <Link className={`nav-link f_13 fw-semibold me-4 ${isActive("/admin/carousel")}`} to="/admin/carousel">
+                  Banners
+                </Link>
+              </li>
+
+
               <li className="nav-item">
                 <Link className={`nav-link f_13 fw-semibold me-4 ${isActive("/admin/products")}`} to="/admin/products">
                   Products
@@ -86,6 +94,7 @@ const AdminNavbar = () => {
                   Orders
                 </Link>
               </li>
+            
 
               <li className="nav-item dropdown">
                 {admin ? (

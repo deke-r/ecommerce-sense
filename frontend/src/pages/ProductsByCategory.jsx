@@ -24,7 +24,7 @@ const ProductsByCategory = () => {
       try {
         setLoading(true)
         const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/productsbycategory/${id}`)
-
+console.log(res)
         setProducts(res.data.products || [])
         setFilteredProducts(res.data.products || [])
       } catch (error) {
@@ -199,6 +199,7 @@ const ProductsByCategory = () => {
                       discount={product.discount}
                       rating={product.rating || 0}
                       reviews={product.reviews || 0}
+                      productId={product.id}
                     />
                   </div>
                 </div>

@@ -1,0 +1,15 @@
+/* update bottomIcon to size and align inline SVGs consistently */
+.bottomIcon {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  
+  .bottomIcon svg {
+    width: 18px;
+    height: 18px;
+  }
+  

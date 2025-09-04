@@ -68,8 +68,8 @@ const CategoryNavigation = () => {
     }
 
     return (
-        <div className="container py-3">
-            <div className="row">
+        <div className="container-fluid py-3">
+            <div className="row mx-md-1">
                 <div className="col-12">
                     <div
                         className={`${styles.categoryContainer} d-flex flex-wrap justify-content-center justify-content-md-start gap-3`}

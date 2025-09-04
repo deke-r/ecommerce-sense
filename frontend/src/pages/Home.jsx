@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { productsAPI } from "../services/api"
 import ProductCard from "../components/ProductCard"
 import CategoryNavigation from "../components/CategoryNavigation"
+import { Banner } from "../components/Banner"
 
 const Home = () => {
   const [products, setProducts] = useState([])
@@ -18,7 +19,7 @@ const Home = () => {
   const fetchProducts = async () => {
     try {
       const response = await productsAPI.getAll()
-      console.log('response',response)
+      console.log('response', response)
       setProducts(response.data.products)
     } catch (error) {
       console.error("Error fetching products:", error)
@@ -47,72 +48,54 @@ const Home = () => {
 
     <>
 
-    <CategoryNavigation/>
-    <div className="container mt-4">
+      <CategoryNavigation />
+      <Banner />
+      <div className="container-fluid mt-4">
 
 
 
 
 
-<div id="carouselExampleFade" class="carousel slide carousel-fade">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="..." class="d-block w-100" alt="img-1"/>
-    </div>
-    <div class="carousel-item">
-      <img src="..." class="d-block w-100" alt="image-2"/>
-    </div>
-    <div class="carousel-item">
-      <img src="..." class="d-block w-100" alt="img-3"/>
-    </div>
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</div>
 
-{/* Products Section */}
-<div className="row mb-4">
-  <div className="col-12">
-    <h2 className="text-center mb-4">Featured Products</h2>
-  </div>
-</div>
 
-<div className="row">
-  {products.map((product) => (
-    <div key={product.id} className="col-lg-3 col-md-6 mb-4">
-      <div onClick={() => handleProductClick(product.id)} style={{ cursor: "pointer" }}>
-        <ProductCard
-          image={`${process.env.REACT_APP_IMAGE_URL}/${product.image}`}
-          title={product.title}
-          price={product.price}
-          oldPrice={product.oldPrice}
-          discount={product.discount}
-          rating={product.average_rating || 0}   // ✅ average from backend
-          reviews={product.reviews ? product.reviews.length : 0} 
-        />
+
+        {/* Products Section */}
+        <div className="row mb-4">
+          <div className="col-12">
+            <h2 className="text-center mb-4">Featured Products</h2>
+          </div>
+        </div>
+        <div className="row mx-md-1">
+          {products.map((product) => (
+            <div key={product.id} className="col-lg-3 col-md-6 mb-4">
+              <div onClick={() => handleProductClick(product.id)} style={{ cursor: "pointer" }}>
+                <ProductCard
+                  image={`${process.env.REACT_APP_IMAGE_URL}/${product.image}`}
+                  title={product.title}
+                  price={product.price}
+                  oldPrice={product.oldPrice}
+                  discount={product.discount}
+                  rating={product.average_rating || 0}   // ✅ average from backend
+                  reviews={product.reviews ? product.reviews.length : 0}
+                  productId={product.id}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {products.length === 0 && (
+          <div className="row">
+            <div className="col-12 text-center">
+              <div className="alert alert-info">
+                <i className="bi bi-info-circle me-2"></i>
+                No products available at the moment.
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
-    </div>
-  ))}
-</div>
-
-{products.length === 0 && (
-  <div className="row">
-    <div className="col-12 text-center">
-      <div className="alert alert-info">
-        <i className="bi bi-info-circle me-2"></i>
-        No products available at the moment.
-      </div>
-    </div>
-  </div>
-)}
-
-    </div>
     </>
 
   )

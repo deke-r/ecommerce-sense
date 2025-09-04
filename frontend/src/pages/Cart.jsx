@@ -145,14 +145,14 @@ const Cart = () => {
                   <div key={item.id} className="row align-items-center border-bottom py-3">
                     <div className="col-md-2">
                       <img
-                        src={item.image || "/placeholder.svg?height=80&width=80&query=product"}
+                        src={`${process.env.REACT_APP_IMAGE_URL}${item.image}`}
                         alt={item.title}
                         className="cart-item-image rounded"
                       />
                     </div>
                     <div className="col-md-4">
-                      <h6 className="mb-1">{item.title}</h6>
-                      <p className="text-muted mb-0">${item.price}</p>
+                      <h6 className="mb-1 text-capitalize">{item.title}</h6>
+                      <p className="text-muted mb-0">₹{item.price}</p>
                     </div>
                     <div className="col-md-3">
                       <div className="input-group">
@@ -186,7 +186,7 @@ const Cart = () => {
                       </div>
                     </div>
                     <div className="col-md-2">
-                      <strong>${(item.price * item.quantity).toFixed(2)}</strong>
+                      <strong>₹{(item.price * item.quantity).toFixed(2)}</strong>
                     </div>
                     <div className="col-md-1">
                       <button
@@ -211,16 +211,16 @@ const Cart = () => {
               <div className="card-body">
                 <div className="d-flex justify-content-between mb-2">
                   <span>Subtotal:</span>
-                  <span>${calculateSubtotal()}</span>
+                  <span>₹{calculateSubtotal()}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-2">
                   <span>Tax (10%):</span>
-                  <span>${calculateTax()}</span>
+                  <span>₹{calculateTax()}</span>
                 </div>
                 <hr />
                 <div className="d-flex justify-content-between mb-3">
                   <strong>Total:</strong>
-                  <strong>${calculateTotal()}</strong>
+                  <strong>₹{calculateTotal()}</strong>
                 </div>
                 <div className="d-grid gap-2">
                   <button className="btn btn-primary btn-lg" onClick={handleCheckout}>

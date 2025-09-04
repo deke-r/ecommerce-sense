@@ -74,4 +74,30 @@ export const adminDashboardAPI = {
   getStats: () => adminAPI.get("/admin/dashboard"),
 }
 
+// Carousel Images API
+export const carouselAPI = {
+  // Get all carousel images
+  getAll: () => adminAPI.get("/admin/carousel"),
+
+  // Get active carousel images
+  getActive: () => adminAPI.get("/admin/carousel/active"),
+
+  // Create carousel image
+  create: (formData) => adminAPI.post("/admin/carousel", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  }),
+
+  // Update carousel image
+  update: (id, formData) => adminAPI.put(`/admin/carousel/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  }),
+
+  // Delete carousel image
+  delete: (id) => adminAPI.delete(`/admin/carousel/${id}`),
+}
+
 export default adminAPI

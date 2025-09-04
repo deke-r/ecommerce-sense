@@ -84,30 +84,35 @@ router.get("/productsbycategory/:categoryId", async (req, res) => {
     const categoryId = req.params.categoryId;
 
     const query = `
-  SELECT 
-    p.id,
-    p.category_id,
-    p.title,
-    p.description,
-    p.stocks,
-    p.price,
-    p.image,
-    p.created_at,
-    p.updated_at,
-    pi.image_url AS extra_image,
-    IFNULL(AVG(r.star), 0) AS rating,
-    COUNT(r.id) AS reviews
-  FROM products p
-  LEFT JOIN product_images pi ON p.id = pi.product_id
-  LEFT JOIN reviews r ON p.id = r.product_id
-  WHERE p.category_id = ?
-  GROUP BY p.id, p.category_id, p.title, p.description, p.stocks, p.price, 
-           p.image, p.created_at, p.updated_at, pi.image_url
-  ORDER BY p.created_at DESC
-`;
+      SELECT 
+        p.id,
+        p.category_id,
+        p.title,
+        p.description,
+        p.stocks,
+        p.price,
+        p.image,
+        p.created_at,
+        p.updated_at,
+        GROUP_CONCAT(pi.image_url) AS extra_images,   -- ✅ collect all images
+        IFNULL(AVG(r.star), 0) AS rating,
+        COUNT(r.id) AS reviews
+      FROM products p
+      LEFT JOIN product_images pi ON p.id = pi.product_id
+      LEFT JOIN reviews r ON p.id = r.product_id
+      WHERE p.category_id = ?
+      GROUP BY p.id, p.category_id, p.title, p.description, p.stocks, p.price, 
+               p.image, p.created_at, p.updated_at
+      ORDER BY p.created_at DESC
+    `;
 
+    let [products] = await con.execute(query, [categoryId]);
 
-    const [products] = await con.execute(query, [categoryId]);
+    // Convert extra_images string into an array
+    products = products.map(p => ({
+      ...p,
+      extra_images: p.extra_images ? p.extra_images.split(",") : []
+    }));
 
     res.json({ products });
   } catch (error) {
@@ -115,6 +120,42 @@ router.get("/productsbycategory/:categoryId", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params
+    const con = getConnection()
+
+    // ✅ Fetch product with category details (only one row because products.id is unique)
+    const [products] = await con.execute(
+      `SELECT p.*, c.id AS category_id, c.name AS category_name
+       FROM products p
+       LEFT JOIN categories c ON p.category_id = c.id
+       WHERE p.id = ?`,
+      [id]
+    )
+
+    if (products.length === 0) {
+      return res.status(404).json({ message: "Product not found" })
+    }
+
+    // ✅ Fetch additional images in separate query (avoids duplicate products)
+    const [additionalImages] = await con.execute(
+      "SELECT id, product_id, image_url FROM product_images WHERE product_id = ? ORDER BY id ASC",
+      [id]
+    )
+
+    const product = products[0]
+    product.additional_images = additionalImages
+
+    res.json({ product })
+  } catch (error) {
+    console.error("Get product error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
 
 
 

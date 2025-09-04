@@ -121,11 +121,20 @@ router.get("/:id", async (req, res) => {
     const { id } = req.params
     const con = getConnection()
 
-    const [products] = await con.execute("SELECT * FROM products WHERE id = ?", [id])
+    // Fetch product with category id & name
+    const [products] = await con.execute(
+      `SELECT p.*, c.id AS category_id, c.name AS category_name
+       FROM products p
+       LEFT JOIN categories c ON p.category_id = c.id
+       WHERE p.id = ?`,
+      [id]
+    )
+
     if (products.length === 0) {
       return res.status(404).json({ message: "Product not found" })
     }
 
+    // Fetch additional images
     const [additionalImages] = await con.execute(
       "SELECT * FROM product_images WHERE product_id = ? ORDER BY id ASC",
       [id]

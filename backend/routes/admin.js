@@ -320,4 +320,159 @@ router.delete("/categories/:id", verifyToken, verifyAdmin, async (req, res) => {
   }
 })
 
+// Carousel Images CRUD operations (Admin only)
+
+// Get all carousel images
+router.get("/carousel", verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const con = getConnection()
+    const [images] = await con.execute(
+      "SELECT id, image_url, title, description, link_url, is_active, sort_order, created_at, updated_at FROM carousel_images ORDER BY sort_order ASC, created_at DESC"
+    )
+
+    // Add full image URLs
+    const imagesWithUrls = images.map((image) => ({
+      ...image,
+      image_url: image.image_url ? `${req.protocol}://${req.get("host")}/uploads/${image.image_url}` : null,
+    }))
+
+    res.json({ images: imagesWithUrls })
+  } catch (error) {
+    console.error("Get carousel images error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
+// Get active carousel images (for frontend)
+router.get("/carousel/active", async (req, res) => {
+  try {
+    const con = getConnection()
+    const [images] = await con.execute(
+      "SELECT id, image_url, title, description, link_url FROM carousel_images WHERE is_active = TRUE ORDER BY sort_order ASC, created_at DESC"
+    )
+
+    // Add full image URLs
+    const imagesWithUrls = images.map((image) => ({
+      ...image,
+      image_url: image.image_url ? `${req.protocol}://${req.get("host")}/uploads/${image.image_url}` : null,
+    }))
+
+    res.json({ images: imagesWithUrls })
+  } catch (error) {
+    console.error("Get active carousel images error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
+// Create new carousel image
+router.post("/carousel", verifyToken, verifyAdmin, upload.single("image"), async (req, res) => {
+  try {
+    const { title, description, link_url, is_active, sort_order } = req.body
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Image is required" })
+    }
+
+    const con = getConnection()
+    const imageName = req.file.filename
+
+    // Convert boolean to integer for MySQL
+    const isActiveInt = is_active === 'true' || is_active === true ? 1 : 0
+
+    const [result] = await con.execute(
+      "INSERT INTO carousel_images (image_url, title, description, link_url, is_active, sort_order) VALUES (?, ?, ?, ?, ?, ?)",
+      [imageName, title || null, description || null, link_url || null, isActiveInt, sort_order || 0]
+    )
+
+    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${imageName}`
+
+    res.status(201).json({
+      message: "Carousel image created successfully",
+      image: {
+        id: result.insertId,
+        image_url: imageUrl,
+        title: title || null,
+        description: description || null,
+        link_url: link_url || null,
+        is_active: is_active !== undefined ? is_active : 1,
+        sort_order: sort_order || 0,
+      },
+    })
+  } catch (error) {
+    console.error("Create carousel image error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
+// Update carousel image
+router.put("/carousel/:id", verifyToken, verifyAdmin, upload.single("image"), async (req, res) => {
+  try {
+    const { id } = req.params
+    const { title, description, link_url, is_active, sort_order } = req.body
+
+    const con = getConnection()
+
+    // Check if image exists and get current image
+    const [images] = await con.execute("SELECT id, image_url FROM carousel_images WHERE id = ?", [id])
+
+    if (images.length === 0) {
+      return res.status(404).json({ message: "Carousel image not found" })
+    }
+
+    let imageName = images[0].image_url
+
+    // If new image is uploaded
+    if (req.file) {
+      // Delete old image if exists
+      if (imageName) {
+        const oldImagePath = path.join("uploads", imageName)
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath)
+        }
+      }
+      imageName = req.file.filename
+    }
+
+    await con.execute(
+      "UPDATE carousel_images SET image_url = ?, title = ?, description = ?, link_url = ?, is_active = ?, sort_order = ? WHERE id = ?",
+      [imageName, title || null, description || null, link_url || null, is_active !== undefined ? is_active : 1, sort_order || 0, id]
+    )
+
+    res.json({ message: "Carousel image updated successfully" })
+  } catch (error) {
+    console.error("Update carousel image error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
+// Delete carousel image
+router.delete("/carousel/:id", verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    const con = getConnection()
+
+    // Check if image exists and get image
+    const [images] = await con.execute("SELECT id, image_url FROM carousel_images WHERE id = ?", [id])
+
+    if (images.length === 0) {
+      return res.status(404).json({ message: "Carousel image not found" })
+    }
+
+    // Delete image file if exists
+    if (images[0].image_url) {
+      const imagePath = path.join("uploads", images[0].image_url)
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath)
+      }
+    }
+
+    await con.execute("DELETE FROM carousel_images WHERE id = ?", [id])
+
+    res.json({ message: "Carousel image deleted successfully" })
+  } catch (error) {
+    console.error("Delete carousel image error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
 module.exports = router

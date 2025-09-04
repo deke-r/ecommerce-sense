@@ -22,6 +22,7 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute"
 import ProductsByCategory from "./pages/ProductsByCategory"
 import AllProducts from "./pages/AllProducts"
 import Addresses from "./pages/Addresses"
+import AdminCarousel from "./pages/admin/AdminCarousel"
 
 function App() {
   const location = useLocation()
@@ -120,6 +121,14 @@ function App() {
             element={
               <AdminProtectedRoute>
                 <AdminCategories />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/carousel"
+            element={
+              <AdminProtectedRoute>
+                <AdminCarousel />
               </AdminProtectedRoute>
             }
           />

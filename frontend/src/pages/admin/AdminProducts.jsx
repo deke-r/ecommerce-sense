@@ -241,7 +241,7 @@ const AdminProducts = () => {
                           <td>{product.title}</td>
                           <td>{product.description?.substring(0, 100)}...</td>
                           <td>{getCategoryName(product.category_id)}</td>
-                          <td>Rs.{product.price}</td>
+                          <td>₹{product.price}</td>
                           <td>
                             <span className={`badge ${product.stocks > 0 ? 'bg-success' : 'bg-danger'}`}>
                               {product.stocks || 0}

@@ -17,11 +17,13 @@ const ProductDetails = () => {
   const [reviewsLoading, setReviewsLoading] = useState(false)
   const [userReview, setUserReview] = useState({ star: 5, comment: "" })
   const [submittingReview, setSubmittingReview] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const handleAddToCart = async () => {
     setAddingToCart(true)
     try {
       await cartAPI.addItem(id, quantity)
+      window.dispatchEvent(new Event("cartUpdated")) // notify navbar
       alert("Product added to cart successfully!")
     } catch (error) {
       console.error("Error adding product to cart:", error)
@@ -35,6 +37,7 @@ const ProductDetails = () => {
     setAddingToCart(true)
     try {
       await cartAPI.addItem(id, quantity)
+      window.dispatchEvent(new Event("cartUpdated")) // notify navbar
       navigate("/checkout")
     } catch (error) {
       console.error("Error buying product:", error)
@@ -146,6 +149,49 @@ const ProductDetails = () => {
     })
   }
 
+  // Get all images for the carousel (main image + additional images)
+  const getAllImages = () => {
+    if (!product) return []
+    
+    const images = []
+    
+    // Add main image first
+    if (product.image) {
+      images.push({
+        id: 'main',
+        url: `${process.env.REACT_APP_IMAGE_URL}/${product.image}`,
+        alt: product.title
+      })
+    }
+    
+    // Add additional images
+    if (product.additional_images && product.additional_images.length > 0) {
+      product.additional_images.forEach((img, index) => {
+        images.push({
+          id: img.id,
+          url: `${process.env.REACT_APP_IMAGE_URL}/${img.image_url}`,
+          alt: `${product.title} - Image ${index + 2}`
+        })
+      })
+    }
+    
+    return images
+  }
+
+  const nextImage = () => {
+    const images = getAllImages()
+    setCurrentImageIndex((prev) => (prev + 1) % images.length)
+  }
+
+  const prevImage = () => {
+    const images = getAllImages()
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
+  }
+
+  const goToImage = (index) => {
+    setCurrentImageIndex(index)
+  }
+
   if (loading) {
     return (
       <div className={styles.pageContainer}>
@@ -174,7 +220,9 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className={styles.pageContainer}>
+    <div className={`container-fluid my-3`}>
+      <div className="row mx-md-1">
+
    <nav aria-label="breadcrumb" className={styles.breadcrumbNav}>
         <ol className={styles.breadcrumb}>
           <li className={styles.breadcrumbItem}>
@@ -182,26 +230,72 @@ const ProductDetails = () => {
               Home
             </button>
           </li>
-          <li className={`${styles.breadcrumbItem} ${styles.active}`}>{product.title}</li>
+          <li className={`${styles.breadcrumbItem} ${styles.active}`}>{product.category_name}</li>
         </ol>
       </nav>
 
       <div className={styles.container}>
         <div className={styles.productSection}>
           <div className={styles.imageContainer}>
-            <img
-                       src={`${process.env.REACT_APP_IMAGE_URL}/${product.image}`}
-              className={styles.productImage}
-              alt={product.title}
-            />
+            <div className={styles.carouselContainer}>
+              <div className={styles.mainImageWrapper}>
+                {getAllImages().length > 0 && (
+                  <img
+                    src={getAllImages()[currentImageIndex].url}
+                    className={styles.productImage}
+                    alt={getAllImages()[currentImageIndex].alt}
+                  />
+                )}
+                
+                {/* Navigation arrows */}
+                {getAllImages().length > 1 && (
+                  <>
+                    <button 
+                      className={`${styles.carouselArrow} ${styles.carouselArrowLeft}`}
+                      onClick={prevImage}
+                      aria-label="Previous image"
+                    >
+                      ‹
+                    </button>
+                    <button 
+                      className={`${styles.carouselArrow} ${styles.carouselArrowRight}`}
+                      onClick={nextImage}
+                      aria-label="Next image"
+                    >
+                      ›
+                    </button>
+                  </>
+                )}
+              </div>
+              
+              {/* Thumbnail navigation */}
+              {getAllImages().length > 1 && (
+                <div className={styles.thumbnailContainer}>
+                  {getAllImages().map((image, index) => (
+                    <button
+                      key={image.id}
+                      className={`${styles.thumbnail} ${index === currentImageIndex ? styles.thumbnailActive : ''}`}
+                      onClick={() => goToImage(index)}
+                      aria-label={`Go to image ${index + 1}`}
+                    >
+                      <img
+                        src={image.url}
+                        alt={image.alt}
+                        className={styles.thumbnailImage}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className={styles.productInfo}>
-            <h1 className={styles.productTitle}>{product.title}</h1>
+            <h4 className={styles.productTitle}>{product.title}</h4>
             <p className={styles.productDescription}>{product.description}</p>
 
             <div className={styles.priceSection}>
-              <span className={styles.price}>${product.price}</span>
+              <span className={styles.price}>₹{product.price}</span>
             </div>
 
             <div className={styles.quantitySection}>
@@ -288,6 +382,8 @@ const ProductDetails = () => {
         </div>
       </div>
     </div>
+    </div>
+
   )
 }
 
