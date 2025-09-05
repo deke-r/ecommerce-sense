@@ -24,6 +24,7 @@ import AllProducts from "./pages/AllProducts"
 import Addresses from "./pages/Addresses"
 import AllReviews from "./pages/AllReviews"
 import AdminCarousel from "./pages/admin/AdminCarousel"
+import Footer from "./components/Footer"
 
 function App() {
   const location = useLocation()
@@ -138,6 +139,8 @@ function App() {
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        {!isAdminRoute && <Footer />}
+
       </div>
     </ErrorBoundary>
   )

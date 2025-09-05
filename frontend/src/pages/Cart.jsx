@@ -35,7 +35,11 @@ const Cart = () => {
       window.dispatchEvent(new Event("cartUpdated"))
     } catch (error) {
       console.error("Error updating quantity:", error)
-      alert("Error updating quantity")
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("Error updating quantity")
+      }
     } finally {
       setUpdating({ ...updating, [itemId]: false })
     }
@@ -87,6 +91,20 @@ const Cart = () => {
         alert("Error clearing cart")
       }
     }
+  }
+
+  const getStockStatus = (item) => {
+    if (item.stocks <= 0) {
+      return <span className="text-danger fw-bold">Out of Stock</span>
+    }
+    if (item.stocks < 5) {
+      return <span className="text-warning fw-bold">Only {item.stocks} left!</span>
+    }
+    return <span className="text-success">In Stock</span>
+  }
+
+  const isItemOutOfStock = (item) => {
+    return item.stocks <= 0
   }
 
   if (loading) {
@@ -142,7 +160,7 @@ const Cart = () => {
             <div className="card">
               <div className="card-body">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="row align-items-center border-bottom py-3">
+                  <div key={item.id} className={`row align-items-center border-bottom py-3 ${isItemOutOfStock(item) ? 'opacity-50' : ''}`}>
                     <div className="col-md-2">
                       <img
                         src={`${process.env.REACT_APP_IMAGE_URL}${item.image}`}
@@ -153,13 +171,16 @@ const Cart = () => {
                     <div className="col-md-4">
                       <h6 className="mb-1 text-capitalize">{item.title}</h6>
                       <p className="text-muted mb-0">₹{item.price}</p>
+                      <div className="mt-1">
+                        {getStockStatus(item)}
+                      </div>
                     </div>
                     <div className="col-md-3">
                       <div className="input-group">
                         <button
                           className="btn btn-outline-secondary"
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          disabled={updating[item.id] || item.quantity <= 1}
+                          disabled={updating[item.id] || item.quantity <= 1 || isItemOutOfStock(item)}
                         >
                           <i className="bi bi-dash"></i>
                         </button>
@@ -174,12 +195,13 @@ const Cart = () => {
                             }
                           }}
                           min="1"
-                          disabled={updating[item.id]}
+                          max={item.stocks}
+                          disabled={updating[item.id] || isItemOutOfStock(item)}
                         />
                         <button
                           className="btn btn-outline-secondary"
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          disabled={updating[item.id]}
+                          disabled={updating[item.id] || item.quantity >= item.stocks || isItemOutOfStock(item)}
                         >
                           <i className="bi bi-plus"></i>
                         </button>
@@ -223,9 +245,13 @@ const Cart = () => {
                   <strong>₹{calculateTotal()}</strong>
                 </div>
                 <div className="d-grid gap-2">
-                  <button className="btn btn-primary btn-lg" onClick={handleCheckout}>
+                  <button 
+                    className="btn btn-primary btn-lg" 
+                    onClick={handleCheckout}
+                    disabled={cartItems.some(item => isItemOutOfStock(item))}
+                  >
                     <i className="bi bi-credit-card me-2"></i>
-                    Proceed to Checkout
+                    {cartItems.some(item => isItemOutOfStock(item)) ? "Remove Out of Stock Items" : "Proceed to Checkout"}
                   </button>
                   <button className="btn btn-outline-secondary" onClick={() => navigate("/")}>
                     <i className="bi bi-arrow-left me-2"></i>

@@ -153,6 +153,55 @@
   }
   
   .cartBtn:hover {
-    background: #0052cc;
+    background: #1e3fb8;
   }
+
+.card.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.outOfStockOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border-radius: 0.5rem;
+}
+
+.stockSection {
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+.outOfStock {
+  color: #dc3545;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.lowStock {
+  color: #ffc107;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.cartBtn.disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.cartBtn.disabled:hover {
+  background-color: #6c757d;
+  transform: none;
+}
   

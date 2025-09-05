@@ -16,7 +16,15 @@ const ProductDetails = () => {
   const [addingToCart, setAddingToCart] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
+  const isOutOfStock = product ? product.stocks <= 0 : false
+  const isLowStock = product ? product.stocks > 0 && product.stocks < 5 : false
+
   const handleAddToCart = async () => {
+    if (isOutOfStock) {
+      alert("This product is out of stock!");
+      return;
+    }
+
     setAddingToCart(true)
     try {
       await cartAPI.addItem(id, quantity)
@@ -24,13 +32,22 @@ const ProductDetails = () => {
       alert("Product added to cart successfully!")
     } catch (error) {
       console.error("Error adding product to cart:", error)
-      alert("Error adding product to cart")
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("Error adding product to cart")
+      }
     } finally {
       setAddingToCart(false)
     }
   }
 
   const handleBuyNow = async () => {
+    if (isOutOfStock) {
+      alert("This product is out of stock!");
+      return;
+    }
+
     setAddingToCart(true)
     try {
       await cartAPI.addItem(id, quantity)
@@ -38,7 +55,11 @@ const ProductDetails = () => {
       navigate("/checkout")
     } catch (error) {
       console.error("Error buying product:", error)
-      alert("Error buying product")
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("Error buying product")
+      }
     } finally {
       setAddingToCart(false)
     }
@@ -59,12 +80,9 @@ const ProductDetails = () => {
     }
   }
 
-  
-
   const handleBreadcrumbClick = (path) => {
     navigate(path)
   }
-
 
   // Get all images for the carousel (main image + additional images)
   const getAllImages = () => {
@@ -108,6 +126,20 @@ const ProductDetails = () => {
   const goToImage = (index) => {
     setCurrentImageIndex(index)
   }
+
+  const getStockMessage = () => {
+    if (isOutOfStock) {
+      return <span className="text-danger fw-bold">Out of Stock</span>;
+    }
+    if (isLowStock) {
+      return <span className="text-warning fw-bold">Only {product.stocks} left!</span>;
+    }
+    return <span className="text-success">In Stock</span>;
+  };
+
+  const getMaxQuantity = () => {
+    return product ? Math.min(product.stocks, 10) : 1; // Limit to 10 or available stock
+  };
 
   if (loading) {
     return (
@@ -215,20 +247,35 @@ const ProductDetails = () => {
               <span className={styles.price}>₹{product.price}</span>
             </div>
 
+            <div className={styles.stockSection}>
+              <strong>Stock Status: </strong>
+              {getStockMessage()}
+            </div>
+
             <div className={styles.quantitySection}>
               <label className={styles.quantityLabel}>Quantity:</label>
               <div className={styles.quantityControls}>
-                <button className={styles.quantityBtn} onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                <button 
+                  className={styles.quantityBtn} 
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  disabled={isOutOfStock}
+                >
                   -
                 </button>
                 <input
                   type="number"
                   className={styles.quantityInput}
                   value={quantity}
-                  onChange={(e) => setQuantity(Math.max(1, Number.parseInt(e.target.value) || 1))}
+                  onChange={(e) => setQuantity(Math.max(1, Math.min(getMaxQuantity(), Number.parseInt(e.target.value) || 1)))}
                   min="1"
+                  max={getMaxQuantity()}
+                  disabled={isOutOfStock}
                 />
-                <button className={styles.quantityBtn} onClick={() => setQuantity(quantity + 1)}>
+                <button 
+                  className={styles.quantityBtn} 
+                  onClick={() => setQuantity(Math.min(getMaxQuantity(), quantity + 1))}
+                  disabled={isOutOfStock}
+                >
                   +
                 </button>
               </div>
@@ -236,14 +283,18 @@ const ProductDetails = () => {
 
             <div className={styles.actionButtons}>
               <button
-                className={`${styles.btn} ${styles.btnPrimary}`}
+                className={`${styles.btn} ${styles.btnPrimary} ${isOutOfStock ? styles.disabled : ''}`}
                 onClick={handleAddToCart}
-                disabled={addingToCart}
+                disabled={addingToCart || isOutOfStock}
               >
-                {addingToCart ? "Adding..." : "Add to Cart"}
+                {addingToCart ? "Adding..." : isOutOfStock ? "Out of Stock" : "Add to Cart"}
               </button>
-              <button className={`${styles.btn} ${styles.btnSuccess}`} onClick={handleBuyNow} disabled={addingToCart}>
-                {addingToCart ? "Processing..." : "Buy Now"}
+              <button 
+                className={`${styles.btn} ${styles.btnSuccess} ${isOutOfStock ? styles.disabled : ''}`} 
+                onClick={handleBuyNow} 
+                disabled={addingToCart || isOutOfStock}
+              >
+                {addingToCart ? "Processing..." : isOutOfStock ? "Out of Stock" : "Buy Now"}
               </button>
               <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => navigate("/")}>
                 Continue Shopping

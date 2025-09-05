@@ -10,7 +10,7 @@ router.get("/", verifyToken, async (req, res) => {
     const con = getConnection()
     const [cartItems] = await con.execute(
       `
-      SELECT c.id, c.quantity, p.id as product_id, p.title, p.price, p.image
+      SELECT c.id, c.quantity, p.id as product_id, p.title, p.price, p.image, p.stocks
       FROM cart c
       JOIN products p ON c.product_id = p.id
       WHERE c.user_id = ?
@@ -36,11 +36,18 @@ router.post("/", verifyToken, async (req, res) => {
 
     const con = getConnection()
 
-    // Check if product exists
-    const [products] = await con.execute("SELECT id FROM products WHERE id = ?", [product_id])
+    // Check if product exists and get stock information
+    const [products] = await con.execute("SELECT id, stocks FROM products WHERE id = ?", [product_id])
 
     if (products.length === 0) {
       return res.status(404).json({ message: "Product not found" })
+    }
+
+    const product = products[0]
+    
+    // Check if product is out of stock
+    if (product.stocks <= 0) {
+      return res.status(400).json({ message: "Product is out of stock" })
     }
 
     // Check if item already in cart
@@ -50,10 +57,22 @@ router.post("/", verifyToken, async (req, res) => {
     ])
 
     if (existingItems.length > 0) {
-      // Update quantity
+      // Check if adding this quantity would exceed stock
       const newQuantity = existingItems[0].quantity + quantity
+      if (newQuantity > product.stocks) {
+        return res.status(400).json({ 
+          message: `Only ${product.stocks} items available in stock. You already have ${existingItems[0].quantity} in your cart.` 
+        })
+      }
+      // Update quantity
       await con.execute("UPDATE cart SET quantity = ? WHERE id = ?", [newQuantity, existingItems[0].id])
     } else {
+      // Check if requested quantity exceeds stock
+      if (quantity > product.stocks) {
+        return res.status(400).json({ 
+          message: `Only ${product.stocks} items available in stock` 
+        })
+      }
       // Add new item
       await con.execute("INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)", [
         req.user.id,
@@ -81,11 +100,26 @@ router.put("/:id", verifyToken, async (req, res) => {
 
     const con = getConnection()
 
-    // Check if cart item belongs to user
-    const [cartItems] = await con.execute("SELECT id FROM cart WHERE id = ? AND user_id = ?", [id, req.user.id])
+    // Check if cart item belongs to user and get product stock
+    const [cartItems] = await con.execute(
+      `SELECT c.id, c.product_id, p.stocks 
+       FROM cart c 
+       JOIN products p ON c.product_id = p.id 
+       WHERE c.id = ? AND c.user_id = ?`, 
+      [id, req.user.id]
+    )
 
     if (cartItems.length === 0) {
       return res.status(404).json({ message: "Cart item not found" })
+    }
+
+    const cartItem = cartItems[0]
+    
+    // Check if requested quantity exceeds stock
+    if (quantity > cartItem.stocks) {
+      return res.status(400).json({ 
+        message: `Only ${cartItem.stocks} items available in stock` 
+      })
     }
 
     await con.execute("UPDATE cart SET quantity = ? WHERE id = ?", [quantity, id])

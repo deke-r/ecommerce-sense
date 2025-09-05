@@ -52,13 +52,6 @@ const Home = () => {
       <Banner />
       <div className="container-fluid mt-4">
 
-
-
-
-
-
-
-
         {/* Products Section */}
         <div className="row mb-4">
           <div className="col-12">
@@ -78,6 +71,7 @@ const Home = () => {
                   rating={product.average_rating || 0}   // ✅ average from backend
                   reviews={product.reviews ? product.reviews.length : 0}
                   productId={product.id}
+                  stocks={product.stocks || 0}
                 />
               </div>
             </div>

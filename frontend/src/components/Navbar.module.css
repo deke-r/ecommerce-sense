@@ -65,7 +65,7 @@
 }
 
 .navbarBrand:hover {
-  color: #72AEC8;
+  color: #2A55E5;
   text-decoration: none;
 }
 
@@ -202,12 +202,12 @@
 }
 
 .navLink:hover {
-  color: #72AEC8;
+  color: #2A55E5;
   text-decoration: none;
 }
 
 .navLink.active {
-  color: #72AEC8;
+  color: #2A55E5;
   font-weight: 600;
 }
 
@@ -279,7 +279,7 @@
 }
 
 .dropdownItem:hover {
-  color: #72AEC8;
+  color: #2A55E5;
   background-color: #f8f9fa;
 }
 
@@ -322,7 +322,7 @@
 
 .searchButton:hover,
 .cartLink:hover {
-  color: #72AEC8;
+  color: #2A55E5;
 }
 
 /* SVG Icons */
