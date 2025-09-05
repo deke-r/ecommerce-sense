@@ -6,6 +6,10 @@ import { productsAPI, cartAPI } from "../services/api"
 import axios from "axios"
 import ReviewsSection from "../components/ReviewsSection"
 import styles from "../style/ProductDetails.module.css"
+import SimilarItems from "../components/SimilarItems"
+import { FaHeart, FaRegHeart } from "react-icons/fa"
+import { wishlistAPI } from "../services/api"
+import { recentlyViewedAPI } from "../services/api"
 
 const ProductDetails = () => {
   const { id } = useParams()
@@ -15,6 +19,8 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true)
   const [addingToCart, setAddingToCart] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isInWishlist, setIsInWishlist] = useState(false)
+  const [wishlistLoading, setWishlistLoading] = useState(false)
 
   const isOutOfStock = product ? product.stocks <= 0 : false
   const isLowStock = product ? product.stocks > 0 && product.stocks < 5 : false
@@ -67,6 +73,36 @@ const ProductDetails = () => {
 
   useEffect(() => {
     fetchProduct()
+  }, [id])
+
+  useEffect(() => {
+    // Track product view when product is loaded
+    if (product && localStorage.getItem('token')) {
+      const trackView = async () => {
+        try {
+          await recentlyViewedAPI.add(id)
+        } catch (error) {
+          console.error('Error tracking view:', error)
+        }
+      }
+      trackView()
+    }
+  }, [product, id])
+
+  useEffect(() => {
+    const checkWishlistStatus = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        if (token) {
+          const response = await wishlistAPI.check(id)
+          setIsInWishlist(response.data.inWishlist)
+        }
+      } catch (error) {
+        console.error('Error checking wishlist status:', error)
+      }
+    }
+
+    checkWishlistStatus()
   }, [id])
 
   const fetchProduct = async () => {
@@ -125,6 +161,36 @@ const ProductDetails = () => {
 
   const goToImage = (index) => {
     setCurrentImageIndex(index)
+  }
+
+  const handleWishlistToggle = async () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      alert('Please login to add items to wishlist')
+      return
+    }
+
+    setWishlistLoading(true)
+    try {
+      if (isInWishlist) {
+        await wishlistAPI.remove(id)
+        setIsInWishlist(false)
+        alert('Product removed from wishlist')
+      } else {
+        await wishlistAPI.add(id)
+        setIsInWishlist(true)
+        alert('Product added to wishlist')
+      }
+    } catch (error) {
+      console.error('Error updating wishlist:', error)
+      if (error.response?.data?.message) {
+        alert(error.response.data.message)
+      } else {
+        alert('Error updating wishlist')
+      }
+    } finally {
+      setWishlistLoading(false)
+    }
   }
 
   const getStockMessage = () => {
@@ -296,12 +362,34 @@ const ProductDetails = () => {
               >
                 {addingToCart ? "Processing..." : isOutOfStock ? "Out of Stock" : "Buy Now"}
               </button>
+              <button
+                className={`${styles.btn} ${styles.btnOutline} ${isInWishlist ? styles.btnWishlistActive : ''}`}
+                onClick={handleWishlistToggle}
+                disabled={wishlistLoading}
+              >
+                {wishlistLoading ? (
+                  <div className="spinner-border spinner-border-sm me-2" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                ) : isInWishlist ? (
+                  <FaHeart className="me-2" />
+                ) : (
+                  <FaRegHeart className="me-2" />
+                )}
+                {isInWishlist ? 'In Wishlist' : 'Add to Wishlist'}
+              </button>
               <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => navigate("/")}>
                 Continue Shopping
               </button>
             </div>
           </div>
         </div>
+
+
+        <SimilarItems 
+          categoryId={product.category_id} 
+          currentProductId={id} 
+        />
 
         <ReviewsSection productId={id} productTitle={product.title} />
       </div>

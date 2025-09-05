@@ -1,481 +1,486 @@
+/* Page Container - Clean Flipkart-style layout */
 .pageContainer {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-    /* background-color: #f8f9fa; */
-    min-height: 100vh;
-  }
-  
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #F1F2F4;
+}
 
-  
-  /* Updated loading container to match AllProducts design */
-  .loadingContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    text-align: center;
-  }
-  
-  .spinner {
-    margin-bottom: 1rem;
-  }
-  
-  .errorAlert {
-    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-    color: white;
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
- /* Breadcrumb Styles */
- .breadcrumbNav {
-    margin-bottom: 30px;
-  }
-  
-  .breadcrumb {
-    display: flex;
-    list-style: none;
-    padding: 15px 20px;
-    margin: 0;
-    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-    /* border-radius: 12px; */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e9ecef;
-  }
-  
-  .breadcrumbItem {
-    display: flex;
-    align-items: center;
-  }
-  
-  .breadcrumbItem:not(:last-child)::after {
-    content: "›";
-    margin: 0 12px;
-    color: #6c757d;
-    font-size: 16px;
-    font-weight: 500;
-  }
-  
-  .breadcrumbLink {
-    background: none;
-    border: none;
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 5px 10px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-  }
-  
-  .breadcrumbLink:hover {
-    background-color: #e3f2fd;
-    color: #0056b3;
-  }
-  
-  .breadcrumbItem.active {
-    color: #495057;
-    font-weight: 600;
-  }
-  
-  /* Product Section */
-  .productSection {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    margin-bottom: 4rem;
-    background: white;
-    padding: 2rem;
-    /* border-radius: 16px; */
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  }
-  
-  .imageContainer {
-    position: relative;
-  }
-  
-  .productImage {
-    width: 100%;
-    max-height: 500px;
-    object-fit: contain;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
-    padding: 50px;
-  }
-  
-  .productImage:hover {
-    transform: scale(1.02);
-  }
-  
-  .productInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  .productTitle {
-    /* font-size: 2.5rem; */
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 0;
-    line-height: 1.2;
-  }
-  
-  .productDescription {
-    font-size: 1.1rem;
-    color: #6c757d;
-    line-height: 1.6;
-    margin: 0;
-  }
-  
-  .priceSection {
-    padding: 1rem 0;
-    border-top: 2px solid #e9ecef;
-    border-bottom: 2px solid #e9ecef;
-  }
-  
-  .price {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #28a745;
-    text-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
-  }
-  
-  /* Quantity Section */
-  .quantitySection {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .quantityLabel {
-    font-weight: 600;
-    color: #495057;
-    font-size: 1.1rem;
-  }
-  
-  .quantityControls {
-    display: flex;
-    align-items: center;
-    width: fit-content;
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .quantityBtn {
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border: none;
-    padding: 0.75rem 1rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #495057;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 45px;
-  }
-  
-  .quantityBtn:hover {
-    background: linear-gradient(135deg, #e9ecef, #dee2e6);
-    color: #212529;
-  }
-  
-  .quantityInput {
-    border: none;
-    padding: 0.75rem;
-    text-align: center;
-    font-size: 1.1rem;
-    font-weight: 600;
-    width: 80px;
-    background: white;
-  }
-  
-  .quantityInput:focus {
-    outline: none;
-    background: #f8f9fa;
-  }
-  
-  /* Updated action buttons with gradient design matching AllProducts theme */
-  .actionButtons {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-  
-  .btn {
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .btnPrimary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-  }
-  
-  .btnPrimary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-  }
-  
-  .btnSuccess {
-    background: linear-gradient(135deg, #28a745, #1e7e34);
-    color: white;
-  }
-  
-  .btnSuccess:hover {
-    background: linear-gradient(135deg, #1e7e34, #155724);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
-  }
-  
-  .btnSecondary {
-    background: linear-gradient(135deg, #6c757d, #545b62);
-    color: white;
-  }
-  
-  .btnSecondary:hover {
-    background: linear-gradient(135deg, #545b62, #3d4449);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(108, 117, 125, 0.3);
-  }
-  
-  .btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-  }
-  
-  /* Updated reviews section with modern card design and gradient headers */
-  .reviewsSection {
-    /* background: white; */
-    /* padding: 3rem; */
-    /* border-radius: 16px; */
-    /* box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); */
-    margin-top: 3rem;
-  }
-  
-  .reviewsTitle {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #2d3748;
-    margin-bottom: 2rem;
-    text-align: center;
-    position: relative;
-  }
-  
-  .reviewsTitle::after {
-    content: "";
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 2px;
-  }
-  
-  /* Review Form */
-  .reviewForm {
-    background: white;
-    padding: 2rem;
-    /* border-radius: 16px; */
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-    margin-bottom: 3rem;
-    border: 1px solid #e2e8f0;
-  }
-  
-  .reviewFormTitle {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #4a5568;
-    margin-bottom: 1.5rem;
-  }
-  
-  .ratingSection {
-    margin-bottom: 1.5rem;
-  }
-  
-  .ratingLabel {
-    display: block;
-    font-weight: 600;
-    color: #4a5568;
-    margin-bottom: 0.5rem;
-  }
-  
-  .starRating {
-    display: flex;
-    gap: 0.25rem;
-  }
-  
-  .star {
-    font-size: 2rem;
-    color: #ddd;
-    transition: color 0.3s ease;
-  }
-  
-  .starFilled {
-    color: #ffc107;
-    text-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
-  }
-  
-  .starEmpty {
-    color: #e9ecef;
-  }
-  
-  .starInteractive {
-    cursor: pointer;
-  }
-  
-  .starInteractive:hover {
-    color: #ffc107;
-    transform: scale(1.1);
-  }
-  
-  .commentSection {
-    margin-bottom: 1.5rem;
-  }
-  
-  .commentLabel {
-    display: block;
-    font-weight: 600;
-    color: #4a5568;
-    margin-bottom: 0.5rem;
-  }
-  
-  .commentTextarea {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-family: inherit;
-    resize: vertical;
-    transition: border-color 0.3s ease;
-  }
-  
-  .commentTextarea:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  }
-  
-  /* Reviews List */
-  .reviewsList {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  .reviewCard {
-    background: white;
-    padding: 1.5rem;
-    /* border-radius: 16px; */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e2e8f0;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .reviewCard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  }
-  
-  .reviewHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  
-  .reviewRating {
-    display: flex;
-    gap: 0.25rem;
-  }
-  
-  .reviewDate {
-    color: #6c757d;
-    font-size: 0.9rem;
-  }
-  
-  .reviewComment {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #4a5568;
-    margin-bottom: 1rem;
-  }
-  
-  .reviewAuthor {
-    font-size: 0.9rem;
-    color: #6c757d;
-    font-style: italic;
-  }
-  
-  .loadingSpinner {
-    text-align: center;
-    padding: 2rem;
-    color: #6c757d;
-    font-size: 1.1rem;
-  }
-  
-  .noReviews {
-    text-align: center;
-    padding: 3rem;
-    color: #6c757d;
-    font-size: 1.1rem;
-    background: white;
-    border-radius: 16px;
-    border: 2px dashed #e2e8f0;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .container {
-      padding: 1rem;
-    }
-  
-    .productSection {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-  
-    .productTitle {
-      font-size: 2rem;
-    }
-  
-    .price {
-      font-size: 2rem;
-    }
-  
-    .actionButtons {
-      flex-direction: column;
-    }
-  
-    .reviewsSection {
-      padding: 2rem 1rem;
-    }
-  
-    .reviewForm {
-      padding: 1.5rem;
-    }
-  }
-  
-/* Carousel Styles */
+/* Loading Container */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.spinner {
+  margin-bottom: 1rem;
+}
+
+/* Error Alert - Clean design */
+.errorAlert {
+  background: #fff;
+  color: #dc3545;
+  padding: 1rem;
+  border-radius: 4px;
+  text-align: center;
+  border: 1px solid #dc3545;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Breadcrumb Styles - Flipkart style */
+.breadcrumbNav {
+  margin-bottom: 20px;
+}
+
+.breadcrumb {
+  display: flex;
+  list-style: none;
+  padding: 12px 16px;
+  margin: 0;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.breadcrumbItem:not(:last-child)::after {
+  content: "›";
+  margin: 0 8px;
+  color: #878787;
+  font-size: 14px;
+}
+
+.breadcrumbLink {
+  background: none;
+  border: none;
+  color: #2874f0;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.breadcrumbLink:hover {
+  background-color: #f0f8ff;
+  color: #1e3fb8;
+}
+
+.breadcrumbItem.active {
+  color: #212121;
+  font-weight: 500;
+}
+
+/* Main Container */
+.container {
+
+ 
+  overflow: hidden;
+}
+
+/* Product Section - Flipkart grid layout */
+.productSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-bottom: 0;
+  background: white;
+  min-height: 500px;
+}
+
+/* Image Container - Clean Flipkart style */
+.imageContainer {
+  position: relative;
+  padding: 20px;
+  background: #fafafa;
+  border-right: 1px solid #e0e0e0;
+}
+
+.productImage {
+  width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  border-radius: 4px;
+  transition: transform 0.3s ease;
+  padding: 20px;
+  background: #fff;
+}
+
+.productImage:hover {
+  transform: scale(1.02);
+}
+
+/* Product Info - Flipkart typography */
+.productInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.productTitle {
+  font-size: 24px;
+  font-weight: 500;
+  color: #212121;
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+}
+
+.productDescription {
+  font-size: 14px;
+  color: #878787;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Price Section - Flipkart pricing style */
+.priceSection {
+  padding: 16px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.price {
+  font-size: 28px;
+  font-weight: 500;
+  color: #212121;
+  margin: 0;
+}
+
+/* Stock Section */
+.stockSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #212121;
+}
+
+/* Quantity Section - Clean Flipkart controls */
+.quantitySection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quantityLabel {
+  font-weight: 500;
+  color: #212121;
+  font-size: 14px;
+}
+
+.quantityControls {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.quantityBtn {
+  background: #fff;
+  border: none;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #212121;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  border-right: 1px solid #e0e0e0;
+}
+
+.quantityBtn:hover {
+  background: #f5f5f5;
+  color: #2874f0;
+}
+
+.quantityBtn:disabled {
+  background: #f5f5f5;
+  color: #c0c0c0;
+  cursor: not-allowed;
+}
+
+.quantityInput {
+  border: none;
+  padding: 8px 12px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  width: 60px;
+  background: #fff;
+  outline: none;
+}
+
+.quantityInput:focus {
+  background: #fafafa;
+}
+
+/* Action Buttons - Flipkart button style */
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: none;
+  letter-spacing: 0;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btnPrimary {
+  background: #2874f0;
+  color: white;
+  border: 1px solid #2874f0;
+}
+
+.btnPrimary:hover {
+  background: #1e3fb8;
+  border-color: #1e3fb8;
+  transform: none;
+  box-shadow: 0 2px 4px rgba(40, 116, 240, 0.3);
+}
+
+.btnSuccess {
+  background: #fb641b;
+  color: white;
+  border: 1px solid #fb641b;
+}
+
+.btnSuccess:hover {
+  background: #e55a17;
+  border-color: #e55a17;
+  transform: none;
+  box-shadow: 0 2px 4px rgba(251, 100, 27, 0.3);
+}
+
+.btnSecondary {
+  background: #fff;
+  color: #2874f0;
+  border: 1px solid #2874f0;
+}
+
+.btnSecondary:hover {
+  background: #f0f8ff;
+  color: #1e3fb8;
+  border-color: #1e3fb8;
+  transform: none;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.disabled {
+  background: #f5f5f5 !important;
+  color: #c0c0c0 !important;
+  border-color: #e0e0e0 !important;
+  cursor: not-allowed !important;
+}
+
+/* Reviews Section */
+.reviewsSection {
+  margin-top: 0;
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+}
+
+.reviewsTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: #212121;
+  margin-bottom: 16px;
+  padding: 24px 24px 0 24px;
+}
+
+.reviewsTitle::after {
+  display: none;
+}
+
+/* Review Form */
+.reviewForm {
+  background: #fff;
+  padding: 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.reviewFormTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #212121;
+  margin-bottom: 16px;
+}
+
+.ratingSection {
+  margin-bottom: 16px;
+}
+
+.ratingLabel {
+  display: block;
+  font-weight: 500;
+  color: #212121;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.starRating {
+  display: flex;
+  gap: 4px;
+}
+
+.star {
+  font-size: 20px;
+  color: #ddd;
+  transition: color 0.2s ease;
+}
+
+.starFilled {
+  color: #ffb400;
+}
+
+.starEmpty {
+  color: #e0e0e0;
+}
+
+.starInteractive {
+  cursor: pointer;
+}
+
+.starInteractive:hover {
+  color: #ffb400;
+  transform: scale(1.1);
+}
+
+.commentSection {
+  margin-bottom: 16px;
+}
+
+.commentLabel {
+  display: block;
+  font-weight: 500;
+  color: #212121;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.commentTextarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+  background: #fff;
+}
+
+.commentTextarea:focus {
+  outline: none;
+  border-color: #2874f0;
+  box-shadow: 0 0 0 2px rgba(40, 116, 240, 0.1);
+}
+
+/* Reviews List */
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.reviewCard {
+  background: #fff;
+  padding: 16px;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  transition: box-shadow 0.2s ease;
+}
+
+.reviewCard:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.reviewRating {
+  display: flex;
+  gap: 2px;
+}
+
+.reviewDate {
+  color: #878787;
+  font-size: 12px;
+}
+
+.reviewComment {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #212121;
+  margin-bottom: 8px;
+}
+
+.reviewAuthor {
+  font-size: 12px;
+  color: #878787;
+  font-style: italic;
+}
+
+.loadingSpinner {
+  text-align: center;
+  padding: 24px;
+  color: #878787;
+  font-size: 14px;
+}
+
+.noReviews {
+  text-align: center;
+  padding: 48px 24px;
+  color: #878787;
+  font-size: 14px;
+  background: #fff;
+  border: 1px dashed #e0e0e0;
+  border-radius: 4px;
+  margin: 24px;
+}
+
+/* Carousel Styles - Clean Flipkart style */
 .carouselContainer {
   position: relative;
   width: 100%;
@@ -485,9 +490,9 @@
   position: relative;
   width: 100%;
   height: 500px;
-  border-radius: 12px;
+  border-radius: 4px;
   overflow: hidden;
-  /* box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); */
+  background: #fff;
 }
 
 .productImage {
@@ -495,7 +500,7 @@
   height: 100%;
   object-fit: contain;
   transition: transform 0.3s ease;
-  padding: 50px;
+  padding: 20px;
 }
 
 .productImage:hover {
@@ -508,109 +513,216 @@
   top: 50%;
   transform: translateY(-50%);
   background: rgba(255, 255, 255, 0.9);
-  border: none;
-  width: 50px;
-  height: 50px;
+  border: 1px solid #e0e0e0;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
+  font-size: 18px;
+  font-weight: 500;
+  color: #212121;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .carouselArrow:hover {
-  background: rgba(255, 255, 255, 1);
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  border-color: #2874f0;
+  color: #2874f0;
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .carouselArrowLeft {
-  left: 20px;
+  left: 16px;
 }
 
 .carouselArrowRight {
-  right: 20px;
+  right: 16px;
 }
 
 /* Thumbnail Navigation */
 .thumbnailContainer {
   display: flex;
-  gap: 12px;
-  margin-top: 20px;
+  gap: 8px;
+  margin-top: 16px;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .thumbnail {
-  width: 80px;
-  height: 80px;
-  border: 3px solid transparent;
-  border-radius: 8px;
+  width: 60px;
+  height: 60px;
+  border: 2px solid transparent;
+  border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: none;
+  transition: all 0.2s ease;
+  background: #fff;
   padding: 0;
 }
 
 .thumbnail:hover {
-  border-color: #007bff;
+  border-color: #2874f0;
   transform: scale(1.05);
 }
 
 .thumbnailActive {
-  border-color: #007bff;
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+  border-color: #2874f0;
+  box-shadow: 0 2px 4px rgba(40, 116, 240, 0.2);
 }
 
 .thumbnailImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
 .thumbnail:hover .thumbnailImage {
   transform: scale(1.1);
 }
 
-/* Responsive adjustments */
+/* Responsive Design */
 @media (max-width: 768px) {
+  .pageContainer {
+    padding: 12px;
+  }
+
+  .productSection {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .imageContainer {
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 16px;
+  }
+
+  .productInfo {
+    padding: 16px;
+  }
+
+  .productTitle {
+    font-size: 20px;
+  }
+
+  .price {
+    font-size: 24px;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
   .mainImageWrapper {
     height: 350px;
   }
-  
+
   .productImage {
-    padding: 30px;
+    padding: 16px;
   }
-  
+
   .carouselArrow {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
   }
-  
+
   .carouselArrowLeft {
-    left: 10px;
+    left: 12px;
   }
-  
+
   .carouselArrowRight {
-    right: 10px;
+    right: 12px;
   }
-  
+
   .thumbnail {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
   }
-  
+
   .thumbnailContainer {
-    gap: 8px;
+    gap: 6px;
+  }
+
+  .reviewsSection {
+    padding: 0;
+  }
+
+  .reviewForm {
+    padding: 16px;
+  }
+
+  .reviewsList {
+    padding: 16px;
   }
 }
-  
+
+@media (max-width: 480px) {
+  .breadcrumb {
+    padding: 8px 12px;
+  }
+
+  .breadcrumbItem {
+    font-size: 12px;
+  }
+
+  .breadcrumbLink {
+    font-size: 12px;
+    padding: 2px 4px;
+  }
+
+  .productTitle {
+    font-size: 18px;
+  }
+
+  .price {
+    font-size: 20px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    min-height: 44px;
+  }
+}
+
+.btnOutline {
+  background: transparent;
+  border: 2px solid #007bff;
+  color: #007bff;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btnOutline:hover:not(:disabled) {
+  background: #007bff;
+  color: white;
+}
+
+.btnWishlistActive {
+  background: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+.btnWishlistActive:hover:not(:disabled) {
+  background: #c82333;
+  border-color: #c82333;
+}
+
+.btnOutline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

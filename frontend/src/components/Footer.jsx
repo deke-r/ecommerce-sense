@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import styles from "../style/footer.module.css"
 
 export default function Footer() {
@@ -10,9 +11,9 @@ export default function Footer() {
             <h6 className={styles.footerHeading}>ABOUT</h6>
             <ul className={styles.footerLinks}>
               <li>
-                <a href="/contact" className={styles.footerLink}>
+                <Link to="/contact" className={styles.footerLink}>
                   Contact Us
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="/about" className={styles.footerLink}>
@@ -94,9 +95,14 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/faq" className={styles.footerLink}>
+                <Link to="/faq" className={styles.footerLink}>
                   FAQ
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className={styles.footerLink}>
+                  Contact Support
+                </Link>
               </li>
             </ul>
           </div>

@@ -42,6 +42,7 @@ export const authAPI = {
 export const productsAPI = {
   getAll: () => api.get("/products"),
   getById: (id) => api.get(`/products/${id}`),
+  getByCategory: (categoryId) => api.get(`/products/category/${categoryId}`),
 }
 
 // Cart API
@@ -71,6 +72,42 @@ export const addressAPI = {
 export const userAPI = {
   getProfile: () => api.get("/user/profile"),
   updateProfile: (profileData) => api.put("/user/profile", profileData),
+}
+
+// Wishlist API
+export const wishlistAPI = {
+  getAll: () => api.get("/wishlist"),
+  add: (productId) => api.post("/wishlist", { product_id: productId }),
+  remove: (productId) => api.delete(`/wishlist/${productId}`),
+  check: (productId) => api.get(`/wishlist/check/${productId}`),
+}
+
+// Recently Viewed API
+export const recentlyViewedAPI = {
+  add: (productId) => api.post("/recently-viewed", { product_id: productId }),
+  getAll: () => api.get("/recently-viewed"),
+}
+
+// Newsletter API
+export const newsletterAPI = {
+  subscribe: (email) => api.post("/newsletter/subscribe", { email }),
+  unsubscribe: (email) => api.post("/newsletter/unsubscribe", { email }),
+}
+
+// Contact API
+export const contactAPI = {
+  submit: (formData) => api.post("/contact", formData),
+}
+
+// FAQ API
+export const faqAPI = {
+  getAll: () => api.get("/faq"),
+}
+
+// Analytics API
+export const analyticsAPI = {
+  trackView: (productId, userId) => api.post("/analytics/track-view", { product_id: productId, user_id: userId }),
+  getProductAnalytics: () => api.get("/analytics/products"),
 }
 
 export default api

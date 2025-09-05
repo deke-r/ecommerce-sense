@@ -25,6 +25,10 @@ import Addresses from "./pages/Addresses"
 import AllReviews from "./pages/AllReviews"
 import AdminCarousel from "./pages/admin/AdminCarousel"
 import Footer from "./components/Footer"
+import ScrollToTop from "./components/ScrollToTop"
+import Wishlist from "./pages/Wishlist"
+import Contact from "./pages/Contact"
+import FAQ from "./pages/FAQ"
 
 function App() {
   const location = useLocation()
@@ -36,6 +40,7 @@ function App() {
     <ErrorBoundary>
       <div className="App">
         {/* Only show navbar for non-admin routes */}
+        <ScrollToTop/>
         {!isAdminRoute && <Navbar />}
         <Routes>
           <Route path="/" element={<Home />} />
@@ -84,6 +89,13 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/wishlist" element={
+            <ProtectedRoute>
+              <Wishlist />
+            </ProtectedRoute>
+          } />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
 
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />

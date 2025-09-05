@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { cartAPI } from "../services/api"
-import { ShoppingCart, User, LogOut, Package,MapPinPlus , Home } from "lucide-react"
+import { cartAPI, wishlistAPI } from "../services/api"
+import { ShoppingCart, User, LogOut, Package, MapPinPlus, Home, Heart } from "lucide-react"
 import styles from "../style/navbar.module.css"
 
 const Navbar = () => {
   const [user, setUser] = useState(null)
   const [cartCount, setCartCount] = useState(0)
+  const [wishlistCount, setWishlistCount] = useState(0)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -17,6 +18,7 @@ const Navbar = () => {
     if (userData) {
       setUser(JSON.parse(userData))
       fetchCartCount()
+      fetchWishlistCount()
     }
 
     const handleCartUpdate = () => {
@@ -25,8 +27,18 @@ const Navbar = () => {
       }
     }
 
+    const handleWishlistUpdate = () => {
+      if (localStorage.getItem("user")) {
+        fetchWishlistCount()
+      }
+    }
+
     window.addEventListener("cartUpdated", handleCartUpdate)
-    return () => window.removeEventListener("cartUpdated", handleCartUpdate)
+    window.addEventListener("wishlistUpdated", handleWishlistUpdate)
+    return () => {
+      window.removeEventListener("cartUpdated", handleCartUpdate)
+      window.removeEventListener("wishlistUpdated", handleWishlistUpdate)
+    }
   }, [])
 
   const fetchCartCount = async () => {
@@ -38,11 +50,21 @@ const Navbar = () => {
     }
   }
 
+  const fetchWishlistCount = async () => {
+    try {
+      const response = await wishlistAPI.getAll()
+      setWishlistCount(response.data.wishlist.length)
+    } catch (error) {
+      console.error("Error fetching wishlist count:", error)
+    }
+  }
+
   const handleLogout = () => {
     localStorage.removeItem("token")
     localStorage.removeItem("user")
     setUser(null)
     setCartCount(0)
+    setWishlistCount(0)
     navigate("/")
   }
 
@@ -83,8 +105,7 @@ const Navbar = () => {
           </div>
 
           <div className="offcanvas-body">
-          <ul className="navbar-nav ms-auto text-uppercase align-items-center pe-3">
-
+            <ul className="navbar-nav ms-auto text-uppercase align-items-center pe-3">
               <li className="nav-item">
                 <Link className={`nav-link f_13 fw-semibold me-4 ${isActive("/")}`} to="/">
                   Home
@@ -95,13 +116,14 @@ const Navbar = () => {
                   Products
                 </Link>
               </li>
-         
+
+        
 
               {/* Cart */}
               <li className="nav-item position-relative me-4">
-                <Link className={`nav-link d-flex align-items-center ${isActive("/cart")}`} to="/cart">
+                <Link className={`nav-link f_13 fw-semibold d-flex align-items-center ${isActive("/cart")}`} to="/cart">
                   <ShoppingCart size={16} className="me-1" />
-                
+                  Cart
                   {cartCount > 0 && (
                     <span className={`${styles.cartBadge}`}>
                       {cartCount}
@@ -130,13 +152,18 @@ const Navbar = () => {
                         </Link>
                       </li>
                       <li>
+                        <Link className="dropdown-item f_13 fw-semibold text-muted" to="/wishlist">
+                          <Heart size={16} className="me-2" /> Wishlist
+                        </Link>
+                      </li>
+                      <li>
                         <Link className="dropdown-item f_13 fw-semibold text-muted" to="/orders">
                           <Package size={16} className="me-2" /> My Orders
                         </Link>
                       </li>
                       <li>
                         <Link className="dropdown-item f_13 fw-semibold text-muted" to="/user/addresses">
-                          <MapPinPlus  size={16} className="me-2" /> My Address
+                          <MapPinPlus size={16} className="me-2" /> My Address
                         </Link>
                       </li>
                       <li>
@@ -158,9 +185,8 @@ const Navbar = () => {
                       data-bs-toggle="dropdown"
                     >
                       <User size={20} className="me-1" />
-                      
                     </a>
-                    <ul className="dropdown-menu  rounded-0 dropdown-menu-end shadow-sm">
+                    <ul className="dropdown-menu rounded-0 dropdown-menu-end shadow-sm">
                       <li>
                         <Link className="dropdown-item f_13 fw-semibold text-muted" to="/login">
                           Login

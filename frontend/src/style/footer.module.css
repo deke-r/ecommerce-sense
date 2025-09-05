@@ -24,15 +24,16 @@
 }
 
 .footerLink {
-  color: #878787;
+  color: #b0b0b0;
   text-decoration: none;
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 14px;
   transition: color 0.2s ease;
+  display: block;
+  padding: 2px 0;
 }
 
 .footerLink:hover {
-  color: #2874f0;
+  color: #fff;
   text-decoration: none;
 }
 
@@ -84,12 +85,14 @@
 }
 
 .phoneLink {
-  color: #2874f0;
+  color: #b0b0b0;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .phoneLink:hover {
-  text-decoration: underline;
+  color: #fff;
+  text-decoration: none;
 }
 
 .bottomSection {

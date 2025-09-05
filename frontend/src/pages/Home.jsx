@@ -6,6 +6,7 @@ import { productsAPI } from "../services/api"
 import ProductCard from "../components/ProductCard"
 import CategoryNavigation from "../components/CategoryNavigation"
 import { Banner } from "../components/Banner"
+import RecentlyViewed from "../components/RecentlyViewed"
 
 const Home = () => {
   const [products, setProducts] = useState([])
@@ -90,6 +91,7 @@ const Home = () => {
         )}
 
       </div>
+      <RecentlyViewed />
     </>
 
   )
