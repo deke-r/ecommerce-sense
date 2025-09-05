@@ -5,9 +5,8 @@ import { useForm } from "react-hook-form"
 import axios from "axios"
 import styles from "../style/Addresses.module.css"
 
-const Addresses = () => {
+const Addresses = ({ onAddressSelect, selectedAddress }) => {
   const [addresses, setAddresses] = useState([])
-  const [selectedAddressId, setSelectedAddressId] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [editingAddress, setEditingAddress] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -40,9 +39,10 @@ const Addresses = () => {
       })
       if (response.data.success) {
         setAddresses(response.data.addresses)
+        // Automatically select the default address
         const defaultAddress = response.data.addresses.find((addr) => addr.is_default)
-        if (defaultAddress) {
-          setSelectedAddressId(defaultAddress.id)
+        if (defaultAddress && onAddressSelect) {
+          onAddressSelect(defaultAddress)
         }
       }
     } catch (error) {
@@ -86,8 +86,9 @@ const Addresses = () => {
         if (response.data.success) {
           showAlert("success", "Address deleted successfully")
           fetchAddresses()
-          if (selectedAddressId === addressId) {
-            setSelectedAddressId(null)
+          // If deleted address was selected, clear selection
+          if (selectedAddress && selectedAddress.id === addressId) {
+            onAddressSelect(null)
           }
         }
       } catch (error) {
@@ -96,12 +97,32 @@ const Addresses = () => {
     }
   }
 
+  const handleMakeDefault = async (addressId) => {
+    try {
+      const token = localStorage.getItem("token")
+      await axios.patch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/address/${addressId}/default`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } },
+      )
+
+      const address = addresses.find(addr => addr.id === addressId)
+      if (address && onAddressSelect) {
+        onAddressSelect(address)
+      }
+      fetchAddresses()
+      showAlert("success", "Default address updated successfully")
+    } catch (error) {
+      showAlert("error", "Failed to update default address")
+    }
+  }
+
   const onSubmit = async (data) => {
     try {
       const token = localStorage.getItem("token")
       const addressData = {
         ...data,
-        is_default: selectedAddressId === null && addresses.length === 0,
+        is_default: addresses.length === 0, // Make first address default
       }
 
       let response
@@ -125,22 +146,6 @@ const Addresses = () => {
       }
     } catch (error) {
       showAlert("error", editingAddress ? "Failed to update address" : "Failed to add address")
-    }
-  }
-
-  const handleAddressSelect = async (addressId) => {
-    try {
-      const token = localStorage.getItem("token")
-      await axios.patch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/address/${addressId}/default`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } },
-      )
-
-      setSelectedAddressId(addressId)
-      fetchAddresses()
-    } catch (error) {
-      showAlert("error", "Failed to update default address")
     }
   }
 
@@ -174,8 +179,8 @@ const Addresses = () => {
 
       <div className={`rounded-4 ${styles.header}`}>
         <div className="d-flex justify-content-between align-items-center">
-          <h4 className={styles.pageTitle}>Saved Addresses</h4>
-          <button className='btn  text-dark border-1 border border-dark f_14 rounded-4 fw-semibold' onClick={handleAddAddress}>
+          <h4 className={styles.pageTitle}>Delivery Address</h4>
+          <button className='btn text-dark border-1 border border-dark f_14 rounded-4 fw-semibold' onClick={handleAddAddress}>
             + Add New Address
           </button>
         </div>
@@ -194,66 +199,35 @@ const Addresses = () => {
         <div>
           {addresses.some((addr) => addr.is_default) && (
             <div>
-              <div className={`text-dark  f_13 fw-semibold mb-2 ms-2  text-uppercase`}>Default Address
-
-              </div>
+              <div className={`text-dark f_13 fw-semibold mb-2 ms-2 text-uppercase`}>Default Address</div>
               {addresses
                 .filter((address) => address.is_default)
                 .map((address) => (
-                    <div key={address.id} className={`rounded-4 ${styles.addressCard}`}>
+                  <div 
+                    key={address.id} 
+                    className={`rounded-4 ${styles.addressCard}`}
+                  >
                     <div className={styles.addressContent}>
-                      <div className={styles.nameSection}>
-                        <span className={`${styles.addressName} text-capitalize`}>{address.full_name}</span>
-                        {/* <span className={`${styles.addressType} text-capitalize`}>HOME</span> */}
-                      </div>
-                      <div className={`${styles.addressDetails} text-capitalize`}>
-                        <div>{address.street}</div>
-                        <div>{address.landmark}</div>
-                        <div>
-                          {address.city} - {address.pincode}
+                      <div className="d-flex justify-content-between align-items-start">
+                        <div className="flex-grow-1">
+                          <div className={styles.nameSection}>
+                            <span className={`${styles.addressName} text-capitalize`}>{address.full_name}</span>
+                          </div>
+                          <div className={`${styles.addressDetails} text-capitalize`}>
+                            <div>{address.street}</div>
+                            <div>{address.landmark}</div>
+                            <div>
+                              {address.city} - {address.pincode}
+                            </div>
+                            <div>{address.state}</div>
+                            <div className={`${styles.phoneNumber} text-capitalize`}>
+                              Mobile: {address.phone}
+                            </div>
+                          </div>
                         </div>
-                        <div className={`${styles.phoneNumber} text-capitalize`}>
-                          Mobile: {address.phone}
+                        <div className="text-primary">
+                          <i className="bi bi-check-circle-fill fs-4"></i>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                ))}
-            </div>
-          )}
-
-          {addresses.some((addr) => !addr.is_default) && (
-            <div>
-              <div className='text-dark f_13 fw-semibold mb-2 ms-2 text-uppercase'>Other addresses
-              </div>
-              {addresses
-                .filter((address) => !address.is_default)
-                .map((address) => (
-                    <div key={address.id} className={`${styles.addressCard} text-capitalize`}>
-                    <div className={styles.addressContent}>
-                      <div className={styles.nameSection}>
-                        <span className={`${styles.addressName} text-capitalize`}>
-                          {address.full_name}
-                        </span>
-                        {/* <span className={`${styles.addressType} text-capitalize`}>HOME</span> */}
-                      </div>
-                      <div className={`${styles.addressDetails} text-capitalize`}>
-                        <div>{address.street}</div>
-                        <div>{address.landmark}</div>
-                        <div>
-                          {address.city} - {address.pincode}
-                        </div>
-                        <div>{address.state}</div>
-                        <div className={`${styles.phoneNumber} text-capitalize`}>
-                          Mobile: {address.phone}
-                        </div>
-                        <span
-                          className={`${styles.makeDefaultText}  text-uppercase fw-semibold f_13 text-decoration-none`}
-                          onClick={() => handleAddressSelect(address.id)}
-                        >
-                          Make This Default
-                        </span>
                       </div>
                     </div>
                     <div className={styles.actionButtons}>
@@ -272,7 +246,68 @@ const Addresses = () => {
                       </button>
                     </div>
                   </div>
-                  
+                ))}
+            </div>
+          )}
+
+          {addresses.some((addr) => !addr.is_default) && (
+            <div>
+              <div className='text-dark f_13 fw-semibold mb-2 ms-2 text-uppercase'>Other addresses</div>
+              {addresses
+                .filter((address) => !address.is_default)
+                .map((address) => (
+                  <div 
+                    key={address.id} 
+                    className={`${styles.addressCard} text-capitalize`}
+                  >
+                    <div className={styles.addressContent}>
+                      <div className="d-flex justify-content-between align-items-start">
+                        <div className="flex-grow-1">
+                          <div className={styles.nameSection}>
+                            <span className={`${styles.addressName} text-capitalize`}>
+                              {address.full_name}
+                            </span>
+                          </div>
+                          <div className={`${styles.addressDetails} text-capitalize`}>
+                            <div>{address.street}</div>
+                            <div>{address.landmark}</div>
+                            <div>
+                              {address.city} - {address.pincode}
+                            </div>
+                            <div>{address.state}</div>
+                            <div className={`${styles.phoneNumber} text-capitalize`}>
+                              Mobile: {address.phone}
+                            </div>
+                            <span
+                              className={`${styles.makeDefaultText} text-uppercase fw-semibold f_13 text-decoration-none`}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleMakeDefault(address.id)
+                              }}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              Make This Default
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.actionButtons}>
+                      <button
+                        className={`${styles.actionButton} text-capitalize`}
+                        onClick={() => handleEditAddress(address)}
+                      >
+                        Edit
+                      </button>
+                      <div className={styles.buttonDivider}></div>
+                      <button
+                        className={`${styles.actionButton} text-capitalize`}
+                        onClick={() => handleDeleteAddress(address.id)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
                 ))}
             </div>
           )}
@@ -291,7 +326,7 @@ const Addresses = () => {
                 <div className={`modal-body ${styles.modalBody}`}>
                   <div className="row">
                     <div className="col-md-6 mb-3">
-                      <label className="form-label  ms-2 f_14 fw-semibold ">Full Name *</label>
+                      <label className="form-label ms-2 f_14 fw-semibold">Full Name *</label>
                       <input
                         type="text"
                         className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.full_name ? "is-invalid" : ""}`}
@@ -300,7 +335,7 @@ const Addresses = () => {
                       {errors.full_name && <div className="invalid-feedback">{errors.full_name.message}</div>}
                     </div>
                     <div className="col-md-6 mb-3">
-                      <label className="form-label  ms-2 f_14 fw-semibold ">Phone Number *</label>
+                      <label className="form-label ms-2 f_14 fw-semibold">Phone Number *</label>
                       <input
                         type="tel"
                         className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.phone ? "is-invalid" : ""}`}
@@ -317,7 +352,7 @@ const Addresses = () => {
                   </div>
 
                   <div className="mb-3">
-                    <label className="form-label  ms-2 f_14 fw-semibold ">Street Address *</label>
+                    <label className="form-label ms-2 f_14 fw-semibold">Street Address *</label>
                     <textarea
                       className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.street ? "is-invalid" : ""}`}
                       rows="2"
@@ -327,13 +362,13 @@ const Addresses = () => {
                   </div>
 
                   <div className="mb-3">
-                    <label className="form-label  ms-2 f_14 fw-semibold ">Landmark (Optional)</label>
+                    <label className="form-label ms-2 f_14 fw-semibold">Landmark (Optional)</label>
                     <input type="text" className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted" {...register("landmark")} />
                   </div>
 
                   <div className="row">
                     <div className="col-md-4 mb-3">
-                      <label className="form-label  ms-2 f_14 fw-semibold ">City *</label>
+                      <label className="form-label ms-2 f_14 fw-semibold">City *</label>
                       <input
                         type="text"
                         className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.city ? "is-invalid" : ""}`}
@@ -342,7 +377,7 @@ const Addresses = () => {
                       {errors.city && <div className="invalid-feedback">{errors.city.message}</div>}
                     </div>
                     <div className="col-md-4 mb-3">
-                      <label className="form-label  ms-2 f_14 fw-semibold ">State *</label>
+                      <label className="form-label ms-2 f_14 fw-semibold">State *</label>
                       <input
                         type="text"
                         className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.state ? "is-invalid" : ""}`}
@@ -351,7 +386,7 @@ const Addresses = () => {
                       {errors.state && <div className="invalid-feedback">{errors.state.message}</div>}
                     </div>
                     <div className="col-md-4 mb-3">
-                      <label className="form-label  ms-2 f_14 fw-semibold ">Pincode *</label>
+                      <label className="form-label ms-2 f_14 fw-semibold">Pincode *</label>
                       <input
                         type="text"
                         className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.pincode ? "is-invalid" : ""}`}
@@ -368,7 +403,6 @@ const Addresses = () => {
                   </div>
                 </div>
                 <div className={`modal-footer ${styles.modalFooter}`}>
-                 
                   <button type="submit" className='btn bg-blue text-light f_14 rounded-4 fw-semibold w-100'>
                     {editingAddress ? "Update Address" : "Add Address"}
                   </button>
@@ -383,3 +417,5 @@ const Addresses = () => {
 }
 
 export default Addresses
+
+

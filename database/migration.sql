@@ -47,4 +47,27 @@ UPDATE products SET category_id = 6 WHERE title IN ('Fitness Tracker');
 UPDATE products SET category_id = 8 WHERE title IN ('Power Bank');
 
 -- Set default stocks for existing products
-UPDATE products SET stocks = 100 WHERE stocks IS NULL OR stocks = 0; 
+UPDATE products SET stocks = 100 WHERE stocks IS NULL OR stocks = 0;
+
+-- Create reviews table if it doesn't exist
+CREATE TABLE IF NOT EXISTS reviews (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    user_id INT NOT NULL,
+    star INT NOT NULL CHECK (star >= 1 AND star <= 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_product_review (user_id, product_id)
+);
+
+-- Create review_images table if it doesn't exist
+CREATE TABLE IF NOT EXISTS review_images (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    review_id INT NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE CASCADE
+); 

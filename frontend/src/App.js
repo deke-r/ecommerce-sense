@@ -22,6 +22,7 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute"
 import ProductsByCategory from "./pages/ProductsByCategory"
 import AllProducts from "./pages/AllProducts"
 import Addresses from "./pages/Addresses"
+import AllReviews from "./pages/AllReviews"
 import AdminCarousel from "./pages/admin/AdminCarousel"
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/product/:id/" element={<ProductDetails />} />
+          <Route path="/product/:productId/reviews" element={<AllReviews />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

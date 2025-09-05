@@ -1,9 +1,40 @@
 const express = require("express")
 const bcrypt = require("bcryptjs")
+const multer = require("multer")
+const path = require("path")
 const { getConnection } = require("../config/database")
 const { verifyToken } = require("../middleware/auth")
 
 const router = express.Router()
+
+// Configure multer for review image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/')
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, uniqueSuffix + '-' + file.originalname)
+  }
+})
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase())
+    const mimetype = allowedTypes.test(file.mimetype)
+    
+    if (mimetype && extname) {
+      return cb(null, true)
+    } else {
+      cb(new Error('Only image files are allowed'))
+    }
+  }
+})
 
 // Get user profile
 router.get("/profile", verifyToken, async (req, res) => {
@@ -179,7 +210,7 @@ router.get("/products", async (req, res) => {
         pi.image_url AS extra_image,
 
         -- aggregate reviews
-        IFNULL(AVG(r.star_count), 0) AS rating,
+        IFNULL(AVG(r.star), 0) AS rating,
         COUNT(r.id) AS reviews
 
       FROM products p
@@ -213,7 +244,7 @@ console.log(products)
 
 
 
-router.post("/reviews", verifyToken, async (req, res) => {
+router.post("/reviews", verifyToken, upload.array('images', 5), async (req, res) => {
   const { product_id, star, comment } = req.body;
   const user_id = req.user.id;
   const con = getConnection()
@@ -229,10 +260,22 @@ router.post("/reviews", verifyToken, async (req, res) => {
     }
 
     // insert new review
-    await con.execute(
+    const [result] = await con.execute(
       "INSERT INTO reviews (product_id, user_id, star, comment, created_at) VALUES (?, ?, ?, ?, NOW())",
       [product_id, user_id, star, comment]
     );
+
+    const reviewId = result.insertId;
+
+    // Handle uploaded images
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        await con.execute(
+          "INSERT INTO review_images (review_id, image_url, created_at) VALUES (?, ?, NOW())",
+          [reviewId, file.filename]
+        );
+      }
+    }
 
     return res.status(201).json({ message: "Review submitted successfully" });
   } catch (error) {
@@ -248,19 +291,144 @@ router.get("/reviews/:productId", async (req, res) => {
   try {
     const con = getConnection()
     const { productId } = req.params
+    const { page = 1, limit = 5 } = req.query
+    const offset = (page - 1) * limit
 
+    // Get reviews with pagination - Fixed: Use string concatenation for LIMIT and OFFSET
     const [reviews] = await con.execute(
       `SELECT r.id, r.product_id, r.user_id, r.star, r.comment, r.created_at, u.name as user_name
        FROM reviews r
        JOIN users u ON r.user_id = u.id
        WHERE r.product_id = ?
-       ORDER BY r.created_at DESC`,
+       ORDER BY r.created_at DESC
+       LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}`,
       [productId]
     )
 
-    res.json({ success: true, reviews })
+    // Get images for each review
+    for (let review of reviews) {
+      const [images] = await con.execute(
+        "SELECT id, image_url FROM review_images WHERE review_id = ? ORDER BY created_at ASC",
+        [review.id]
+      )
+      review.images = images
+    }
+
+    // Get total count for pagination
+    const [countResult] = await con.execute(
+      "SELECT COUNT(*) as total FROM reviews WHERE product_id = ?",
+      [productId]
+    )
+    const totalReviews = countResult[0].total
+
+    // Get average rating
+    const [ratingResult] = await con.execute(
+      "SELECT AVG(star) as average_rating, COUNT(*) as total_reviews FROM reviews WHERE product_id = ?",
+      [productId]
+    )
+
+    res.json({ 
+      success: true, 
+      reviews,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalReviews / limit),
+        totalReviews,
+        hasNextPage: page < Math.ceil(totalReviews / limit),
+        hasPrevPage: page > 1
+      },
+      rating: {
+        average: parseFloat(ratingResult[0].average_rating || 0).toFixed(1),
+        total: ratingResult[0].total_reviews
+      }
+    })
   } catch (error) {
     console.error("❌ Get reviews error:", error)
+    res.status(500).json({ success: false, message: "Server error" })
+  }
+})
+
+// Get all reviews for a product (for dedicated reviews page)
+router.get("/reviews/:productId/all", async (req, res) => {
+  try {
+    const con = getConnection()
+    const { productId } = req.params
+    const { page = 1, limit = 10 } = req.query
+    const offset = (page - 1) * limit
+
+    // Get reviews with pagination - Fixed: Use string concatenation for LIMIT and OFFSET
+    const [reviews] = await con.execute(
+      `SELECT r.id, r.product_id, r.user_id, r.star, r.comment, r.created_at, u.name as user_name
+       FROM reviews r
+       JOIN users u ON r.user_id = u.id
+       WHERE r.product_id = ?
+       ORDER BY r.created_at DESC
+       LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}`,
+      [productId]
+    )
+
+
+    // Get images for each review
+    for (let review of reviews) {
+      const [images] = await con.execute(
+        "SELECT id, image_url FROM review_images WHERE review_id = ? ORDER BY created_at ASC",
+        [review.id]
+      )
+      review.images = images
+    }
+
+    // Get total count for pagination
+    const [countResult] = await con.execute(
+      "SELECT COUNT(*) as total FROM reviews WHERE product_id = ?",
+      [productId]
+    )
+    const totalReviews = countResult[0].total
+
+    // Get average rating and rating distribution
+    const [ratingResult] = await con.execute(
+      `SELECT 
+        AVG(star) as average_rating, 
+        COUNT(*) as total_reviews,
+        SUM(CASE WHEN star = 5 THEN 1 ELSE 0 END) as five_star,
+        SUM(CASE WHEN star = 4 THEN 1 ELSE 0 END) as four_star,
+        SUM(CASE WHEN star = 3 THEN 1 ELSE 0 END) as three_star,
+        SUM(CASE WHEN star = 2 THEN 1 ELSE 0 END) as two_star,
+        SUM(CASE WHEN star = 1 THEN 1 ELSE 0 END) as one_star
+       FROM reviews WHERE product_id = ?`,
+      [productId]
+    )
+
+    // Get product info
+    const [productResult] = await con.execute(
+      "SELECT id, title, image FROM products WHERE id = ?",
+      [productId]
+    )
+
+    res.json({ 
+      success: true, 
+      reviews,
+      product: productResult[0],
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalReviews / limit),
+        totalReviews,
+        hasNextPage: page < Math.ceil(totalReviews / limit),
+        hasPrevPage: page > 1
+      },
+      rating: {
+        average: parseFloat(ratingResult[0].average_rating || 0).toFixed(1),
+        total: ratingResult[0].total_reviews,
+        distribution: {
+          five: ratingResult[0].five_star,
+          four: ratingResult[0].four_star,
+          three: ratingResult[0].three_star,
+          two: ratingResult[0].two_star,
+          one: ratingResult[0].one_star
+        }
+      }
+    })
+  } catch (error) {
+    console.error("❌ Get all reviews error:", error)
     res.status(500).json({ success: false, message: "Server error" })
   }
 })

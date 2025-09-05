@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { productsAPI, cartAPI } from "../services/api"
 import axios from "axios"
+import ReviewsSection from "../components/ReviewsSection"
 import styles from "../style/ProductDetails.module.css"
 
 const ProductDetails = () => {
@@ -13,10 +14,6 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(true)
   const [addingToCart, setAddingToCart] = useState(false)
-  const [reviews, setReviews] = useState([])
-  const [reviewsLoading, setReviewsLoading] = useState(false)
-  const [userReview, setUserReview] = useState({ star: 5, comment: "" })
-  const [submittingReview, setSubmittingReview] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const handleAddToCart = async () => {
@@ -49,7 +46,6 @@ const ProductDetails = () => {
 
   useEffect(() => {
     fetchProduct()
-    fetchReviews()
   }, [id])
 
   const fetchProduct = async () => {
@@ -63,91 +59,12 @@ const ProductDetails = () => {
     }
   }
 
-  const fetchReviews = async () => {
-    setReviewsLoading(true)
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/reviews/${id}`)
-      setReviews(response.data.reviews || [])
-    } catch (error) {
-      console.error("Error fetching reviews:", error)
-    } finally {
-      setReviewsLoading(false)
-    }
-  }
-
-  const submitReview = async () => {
-    const token = localStorage.getItem("token")
-    if (!token) {
-      navigate("/login")
-      return
-    }
-  
-    if (!userReview.comment.trim()) {
-      alert("Please write a comment for your review")
-      return
-    }
-  
-    setSubmittingReview(true)
-    try {
-      await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/user/reviews`,
-        {
-          product_id: id,
-          star: userReview.star,
-          comment: userReview.comment.trim(),
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-  
-      // reset form
-      setUserReview({ star: 5, comment: "" })
-  
-      // ✅ refresh both product + reviews
-      await fetchReviews()
-      await fetchProduct()
-  
-      alert("Review submitted successfully!")
-    } catch (error) {
-      
-      console.log(error)
-      if (error.response?.status === 400 && error.response?.data?.message === "Review already submitted") {
-        alert("You have already submitted a review for this product.")
-      } else {
-        alert("Error submitting review")
-      }
-    } finally {
-      setSubmittingReview(false)
-    }
-  }
   
 
   const handleBreadcrumbClick = (path) => {
     navigate(path)
   }
 
-  const renderStars = (rating, interactive = false, onStarClick = null) => {
-    return Array.from({ length: 5 }, (_, index) => (
-      <span
-        key={index}
-        className={`${styles.star} ${index < rating ? styles.starFilled : styles.starEmpty} ${
-          interactive ? styles.starInteractive : ""
-        }`}
-        onClick={interactive ? () => onStarClick(index + 1) : undefined}
-      >
-        ★
-      </span>
-    ))
-  }
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  }
 
   // Get all images for the carousel (main image + additional images)
   const getAllImages = () => {
@@ -335,51 +252,7 @@ const ProductDetails = () => {
           </div>
         </div>
 
-        <div className={styles.reviewsSection}>
-          <h2 className={styles.reviewsTitle}>Customer Reviews</h2>
-
-          <div className={styles.reviewForm}>
-            <h3 className={styles.reviewFormTitle}>Write a Review</h3>
-            <div className={styles.ratingSection}>
-              <label className={styles.ratingLabel}>Your Rating:</label>
-              <div className={styles.starRating}>
-                {renderStars(userReview.star, true, (rating) => setUserReview((prev) => ({ ...prev, star: rating })))}
-              </div>
-            </div>
-            <div className={styles.commentSection}>
-              <label className={styles.commentLabel}>Your Comment:</label>
-              <textarea
-                className={styles.commentTextarea}
-                value={userReview.comment}
-                onChange={(e) => setUserReview((prev) => ({ ...prev, comment: e.target.value }))}
-                placeholder="Share your thoughts about this product..."
-                rows="4"
-              />
-            </div>
-            <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={submitReview} disabled={submittingReview}>
-              {submittingReview ? "Submitting..." : "Submit Review"}
-            </button>
-          </div>
-
-          <div className={styles.reviewsList}>
-            {reviewsLoading ? (
-              <div className={styles.loadingSpinner}>Loading reviews...</div>
-            ) : reviews.length > 0 ? (
-              reviews.map((review) => (
-                <div key={review.id} className={styles.reviewCard}>
-                  <div className={styles.reviewHeader}>
-                    <div className={styles.reviewRating}>{renderStars(review.star)}</div>
-                    <div className={styles.reviewDate}>{formatDate(review.created_at)}</div>
-                  </div>
-                  <div className={`text-capitalize ${styles.reviewComment}`}>{review.comment}</div>
-                  <div className={styles.reviewAuthor}>By User #{review.user_name}</div>
-                </div>
-              ))
-            ) : (
-              <div className={styles.noReviews}>No reviews yet. Be the first to review this product!</div>
-            )}
-          </div>
-        </div>
+        <ReviewsSection productId={id} productTitle={product.title} />
       </div>
     </div>
     </div>

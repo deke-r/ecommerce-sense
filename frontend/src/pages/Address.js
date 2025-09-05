@@ -2,34 +2,33 @@
 
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { useForm } from "react-hook-form"
-import { addressAPI, ordersAPI } from "../services/api"
+import { cartAPI, addressAPI } from "../services/api"
+import Addresses from './Addresses'
 
 const Address = () => {
   const [addresses, setAddresses] = useState([])
   const [selectedAddress, setSelectedAddress] = useState(null)
-  const [showForm, setShowForm] = useState(false)
+  const [cartItems, setCartItems] = useState([])
   const [loading, setLoading] = useState(true)
-  const [placing, setPlacing] = useState(false)
+  const [cartLoading, setCartLoading] = useState(true)
   const navigate = useNavigate()
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm()
 
   useEffect(() => {
     fetchAddresses()
+    fetchCartItems()
   }, [])
 
   const fetchAddresses = async () => {
     try {
+      setLoading(true)
       const response = await addressAPI.getAll()
-      setAddresses(response.data.addresses)
-      if (response.data.addresses.length > 0) {
-        setSelectedAddress(response.data.addresses[0].id)
+      if (response.data.success) {
+        setAddresses(response.data.addresses)
+        // Set default address if available
+        const defaultAddress = response.data.addresses.find(addr => addr.is_default)
+        if (defaultAddress) {
+          setSelectedAddress(defaultAddress)
+        }
       }
     } catch (error) {
       console.error("Error fetching addresses:", error)
@@ -38,39 +37,59 @@ const Address = () => {
     }
   }
 
-  const onSubmit = async (data) => {
+  const fetchCartItems = async () => {
     try {
-      await addressAPI.create(data)
-      reset()
-      setShowForm(false)
-      fetchAddresses()
+      setCartLoading(true)
+      const response = await cartAPI.getItems()
+      setCartItems(response.data.cartItems)
     } catch (error) {
-      console.error("Error adding address:", error)
-      alert("Error adding address")
+      console.error("Error fetching cart items:", error)
+    } finally {
+      setCartLoading(false)
     }
   }
 
-  const handlePlaceOrder = async () => {
+  const handleAddressSelect = (address) => {
+    setSelectedAddress(address)
+  }
+
+  const calculateSubtotal = () => {
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)
+  }
+
+  const calculateTax = () => {
+    return (calculateSubtotal() * 0.1).toFixed(2) // 10% tax
+  }
+
+  const calculateTotal = () => {
+    return (Number.parseFloat(calculateSubtotal()) + Number.parseFloat(calculateTax())).toFixed(2)
+  }
+
+  const handleProceedToPayment = () => {
     if (!selectedAddress) {
       alert("Please select an address")
       return
     }
 
-    setPlacing(true)
-    try {
-      const response = await ordersAPI.create(selectedAddress)
-      window.dispatchEvent(new Event("cartUpdated"))
-      alert("Order placed successfully!")
-      navigate("/orders")
-    } catch (error) {
-      console.error("Error placing order:", error)
-      alert("Error placing order")
-    } finally {
-      setPlacing(false)
+    if (cartItems.length === 0) {
+      alert("Your cart is empty")
+      return
     }
+
+    // Store order data in localStorage for payment page
+    const orderData = {
+      address: selectedAddress,
+      cartItems: cartItems,
+      subtotal: calculateSubtotal(),
+      tax: calculateTax(),
+      total: calculateTotal()
+    }
+    
+    localStorage.setItem('orderData', JSON.stringify(orderData))
+    navigate("/payment")
   }
 
-  if (loading) {
+  if (loading || cartLoading) {
     return (
       <div className="container mt-5">
         <div className="text-center">
@@ -85,214 +104,11 @@ const Address = () => {
   return (
     <div className="container mt-4">
       <div className="row">
-        <div className="col-12">
-          <nav aria-label="breadcrumb">
-            <ol className="breadcrumb">
-              <li className="breadcrumb-item">
-                <button className="btn btn-link p-0" onClick={() => navigate("/")}>
-                  Home
-                </button>
-              </li>
-              <li className="breadcrumb-item">
-                <button className="btn btn-link p-0" onClick={() => navigate("/cart")}>
-                  Cart
-                </button>
-              </li>
-              <li className="breadcrumb-item active">Address</li>
-            </ol>
-          </nav>
-          <h2 className="mb-4">
-            <i className="bi bi-geo-alt me-2"></i>
-            Select Delivery Address
-          </h2>
-        </div>
-      </div>
-
-      <div className="row">
         <div className="col-lg-8">
-          <div className="card">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">Saved Addresses</h5>
-              <button className="btn btn-primary btn-sm" onClick={() => setShowForm(!showForm)}>
-                <i className="bi bi-plus-circle me-1"></i>
-                Add New Address
-              </button>
-            </div>
-            <div className="card-body">
-              {showForm && (
-                <form onSubmit={handleSubmit(onSubmit)} className="mb-4 p-3 bg-light rounded">
-                  <h6 className="mb-3">Add New Address</h6>
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="name" className="form-label">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        className={`form-control ${errors.name ? "is-invalid" : ""}`}
-                        id="name"
-                        {...register("name", {
-                          required: "Full name is required",
-                          minLength: {
-                            value: 2,
-                            message: "Name must be at least 2 characters",
-                          },
-                        })}
-                      />
-                      {errors.name && <div className="invalid-feedback">{errors.name.message}</div>}
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="phone" className="form-label">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        className={`form-control ${errors.phone ? "is-invalid" : ""}`}
-                        id="phone"
-                        {...register("phone", {
-                          required: "Phone number is required",
-                          pattern: {
-                            value: /^[0-9]{10}$/,
-                            message: "Phone number must be 10 digits",
-                          },
-                        })}
-                      />
-                      {errors.phone && <div className="invalid-feedback">{errors.phone.message}</div>}
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="street" className="form-label">
-                      Street Address
-                    </label>
-                    <input
-                      type="text"
-                      className={`form-control ${errors.street ? "is-invalid" : ""}`}
-                      id="street"
-                      {...register("street", {
-                        required: "Street address is required",
-                        minLength: {
-                          value: 5,
-                          message: "Street address must be at least 5 characters",
-                        },
-                      })}
-                    />
-                    {errors.street && <div className="invalid-feedback">{errors.street.message}</div>}
-                  </div>
-                  <div className="row">
-                    <div className="col-md-4 mb-3">
-                      <label htmlFor="city" className="form-label">
-                        City
-                      </label>
-                      <input
-                        type="text"
-                        className={`form-control ${errors.city ? "is-invalid" : ""}`}
-                        id="city"
-                        {...register("city", {
-                          required: "City is required",
-                          minLength: {
-                            value: 2,
-                            message: "City must be at least 2 characters",
-                          },
-                        })}
-                      />
-                      {errors.city && <div className="invalid-feedback">{errors.city.message}</div>}
-                    </div>
-                    <div className="col-md-4 mb-3">
-                      <label htmlFor="pincode" className="form-label">
-                        Pincode
-                      </label>
-                      <input
-                        type="text"
-                        className={`form-control ${errors.pincode ? "is-invalid" : ""}`}
-                        id="pincode"
-                        {...register("pincode", {
-                          required: "Pincode is required",
-                          pattern: {
-                            value: /^[0-9]{6}$/,
-                            message: "Pincode must be 6 digits",
-                          },
-                        })}
-                      />
-                      {errors.pincode && <div className="invalid-feedback">{errors.pincode.message}</div>}
-                    </div>
-                    <div className="col-md-4 mb-3">
-                      <label htmlFor="state" className="form-label">
-                        State
-                      </label>
-                      <input
-                        type="text"
-                        className={`form-control ${errors.state ? "is-invalid" : ""}`}
-                        id="state"
-                        {...register("state", {
-                          required: "State is required",
-                          minLength: {
-                            value: 2,
-                            message: "State must be at least 2 characters",
-                          },
-                        })}
-                      />
-                      {errors.state && <div className="invalid-feedback">{errors.state.message}</div>}
-                    </div>
-                  </div>
-                  <div className="d-flex gap-2">
-                    <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                      {isSubmitting ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2"></span>
-                          Saving...
-                        </>
-                      ) : (
-                        "Save Address"
-                      )}
-                    </button>
-                    <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {addresses.length === 0 ? (
-                <div className="text-center py-4">
-                  <i className="bi bi-geo-alt display-4 text-muted"></i>
-                  <p className="text-muted mt-2">No addresses saved. Please add a new address.</p>
-                </div>
-              ) : (
-                <div className="row">
-                  {addresses.map((address) => (
-                    <div key={address.id} className="col-md-6 mb-3">
-                      <div
-                        className={`card h-100 ${selectedAddress === address.id ? "border-primary" : ""}`}
-                        style={{ cursor: "pointer" }}
-                        onClick={() => setSelectedAddress(address.id)}
-                      >
-                        <div className="card-body">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="address"
-                              checked={selectedAddress === address.id}
-                              onChange={() => setSelectedAddress(address.id)}
-                            />
-                            <label className="form-check-label">
-                              <strong>{address.name}</strong>
-                            </label>
-                          </div>
-                          <p className="mb-1">{address.phone}</p>
-                          <p className="mb-0 text-muted">
-                            {address.street}, {address.city}
-                            <br />
-                            {address.state} - {address.pincode}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          <Addresses 
+            onAddressSelect={handleAddressSelect}
+            selectedAddress={selectedAddress}
+          />
         </div>
 
         <div className="col-lg-4">
@@ -301,30 +117,100 @@ const Address = () => {
               <h5 className="mb-0">Order Summary</h5>
             </div>
             <div className="card-body">
-              <p className="text-muted mb-3">Review your order and place it.</p>
-              <div className="d-grid gap-2">
-                <button
-                  className="btn btn-success btn-lg"
-                  onClick={handlePlaceOrder}
-                  disabled={!selectedAddress || placing}
-                >
-                  {placing ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2"></span>
-                      Placing Order...
-                    </>
-                  ) : (
-                    <>
-                      <i className="bi bi-check-circle me-2"></i>
-                      Place Order
-                    </>
+              {cartItems.length === 0 ? (
+                <div className="text-center py-3">
+                  <p className="text-muted">Your cart is empty</p>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={() => navigate("/cart")}
+                  >
+                    Go to Cart
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* Cart Items */}
+                  <div className="mb-3">
+                    <h6>Items ({cartItems.length})</h6>
+                    <div className="max-height-300 overflow-auto">
+                      {cartItems.map((item) => (
+                        <div key={item.id} className="d-flex align-items-center mb-2 pb-2 border-bottom">
+                          <img
+                            src={`${process.env.REACT_APP_IMAGE_URL}${item.image}`}
+                            alt={item.title}
+                            className="rounded me-2"
+                            style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+                          />
+                          <div className="flex-grow-1">
+                            <div className="fw-semibold text-capitalize" style={{ fontSize: '0.9rem' }}>
+                              {item.title}
+                            </div>
+                            <div className="text-muted" style={{ fontSize: '0.8rem' }}>
+                              Qty: {item.quantity} × ₹{item.price}
+                            </div>
+                          </div>
+                          <div className="fw-semibold">
+                            ₹{(item.price * item.quantity).toFixed(2)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Price Breakdown */}
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between mb-1">
+                      <span>Subtotal:</span>
+                      <span>₹{calculateSubtotal()}</span>
+                    </div>
+                    <div className="d-flex justify-content-between mb-1">
+                      <span>Tax (10%):</span>
+                      <span>₹{calculateTax()}</span>
+                    </div>
+                    <hr />
+                    <div className="d-flex justify-content-between mb-3">
+                      <strong>Total:</strong>
+                      <strong>₹{calculateTotal()}</strong>
+                    </div>
+                  </div>
+
+                  {/* Selected Address */}
+                  {selectedAddress && (
+                    <div className="mb-3">
+                      <h6>Delivery Address</h6>
+                      <div className="bg-light p-2 rounded">
+                        <div className="fw-semibold text-capitalize">{selectedAddress.full_name}</div>
+                        <div className="text-muted text-capitalize" style={{ fontSize: '0.9rem' }}>
+                          {selectedAddress.street}<br />
+                          {selectedAddress.landmark && `${selectedAddress.landmark}, `}
+                          {selectedAddress.city} - {selectedAddress.pincode}<br />
+                          {selectedAddress.state}<br />
+                          Mobile: {selectedAddress.phone}
+                        </div>
+                      </div>
+                    </div>
                   )}
-                </button>
-                <button className="btn btn-outline-secondary" onClick={() => navigate("/cart")}>
-                  <i className="bi bi-arrow-left me-2"></i>
-                  Back to Cart
-                </button>
-              </div>
+
+                  {/* Action Buttons */}
+                  <div className="d-grid gap-2">
+                    <button
+                      className="btn btn-success btn-lg"
+                      onClick={handleProceedToPayment}
+                      disabled={!selectedAddress || cartItems.length === 0}
+                    >
+                      <i className="bi bi-credit-card me-2"></i>
+                      Proceed to Payment
+                    </button>
+                    <button 
+                      className="btn btn-outline-secondary" 
+                      onClick={() => navigate("/cart")}
+                    >
+                      <i className="bi bi-arrow-left me-2"></i>
+                      Back to Cart
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
