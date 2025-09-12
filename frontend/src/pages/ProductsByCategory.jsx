@@ -5,6 +5,9 @@ import axios from "axios"
 import ProductCard from "../components/ProductCard"
 import { useNavigate, useParams } from "react-router-dom"
 import styles from "../style/ProductsByCategory.module.css"
+import { FaShoppingCart, FaRegHeart, FaHeart, FaStar } from "react-icons/fa";
+import { cartAPI, wishlistAPI } from "../services/api";
+import ProductCardRow from "../components/ProductCardRow"
 
 const ProductsByCategory = () => {
   const { id, name } = useParams()
@@ -189,21 +192,17 @@ console.log(res)
           <div className={styles.productsGrid}>
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
-                <div key={product.id} className={styles.productItem}>
-                  <div onClick={() => handleProductClick(product.id)} className={styles.productClickable}>
-                    <ProductCard
-                      image={`${process.env.REACT_APP_IMAGE_URL}/${product.image}`}
-                      title={product.title}
-                      price={product.price}
-                      oldPrice={product.old_price}
-                      discount={product.discount}
-                      rating={product.rating || 0}
-                      reviews={product.reviews || 0}
-                      productId={product.id}
-                      stocks={product.stocks || 0}
-                    />
-                  </div>
-                </div>
+                <ProductCardRow
+                  image={`${process.env.REACT_APP_IMAGE_URL}/${product.image}`}
+                  title={product.title}
+                  price={product.price}
+                  oldPrice={product.old_price}
+                  discount={product.discount}
+                  rating={product.rating || 0}
+                  reviews={product.reviews || 0}
+                  productId={product.id}
+                  stocks={product.stocks || 0}
+                />
               ))
             ) : (
               <div className={styles.noProducts}>

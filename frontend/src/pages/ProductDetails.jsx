@@ -10,6 +10,7 @@ import SimilarItems from "../components/SimilarItems"
 import { FaHeart, FaRegHeart } from "react-icons/fa"
 import { wishlistAPI } from "../services/api"
 import { recentlyViewedAPI } from "../services/api"
+import PincodeDetails from "../components/PincodeChecker"
 
 const ProductDetails = () => {
   const { id } = useParams()
@@ -29,6 +30,13 @@ const ProductDetails = () => {
     if (isOutOfStock) {
       alert("This product is out of stock!");
       return;
+    }
+
+    // Check if user is logged in
+    const token = localStorage.getItem('token')
+    if (!token) {
+      navigate('/login')
+      return
     }
 
     setAddingToCart(true)
@@ -52,6 +60,13 @@ const ProductDetails = () => {
     if (isOutOfStock) {
       alert("This product is out of stock!");
       return;
+    }
+
+    // Check if user is logged in
+    const token = localStorage.getItem('token')
+    if (!token) {
+      navigate('/login')
+      return
     }
 
     setAddingToCart(true)
@@ -95,7 +110,7 @@ const ProductDetails = () => {
         const token = localStorage.getItem('token')
         if (token) {
           const response = await wishlistAPI.check(id)
-          setIsInWishlist(response.data.inWishlist)
+          setIsInWishlist(response.data.isWishlisted ?? response.data.inWishlist ?? false)
         }
       } catch (error) {
         console.error('Error checking wishlist status:', error)
@@ -166,7 +181,7 @@ const ProductDetails = () => {
   const handleWishlistToggle = async () => {
     const token = localStorage.getItem('token')
     if (!token) {
-      alert('Please login to add items to wishlist')
+      navigate('/login')
       return
     }
 
@@ -181,6 +196,7 @@ const ProductDetails = () => {
         setIsInWishlist(true)
         alert('Product added to wishlist')
       }
+      window.dispatchEvent(new Event("wishlistUpdated"))
     } catch (error) {
       console.error('Error updating wishlist:', error)
       if (error.response?.data?.message) {
@@ -384,6 +400,11 @@ const ProductDetails = () => {
             </div>
           </div>
         </div>
+
+
+
+
+{/* <PincodeDetails/> */}
 
 
         <SimilarItems 

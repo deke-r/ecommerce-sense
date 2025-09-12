@@ -43,6 +43,7 @@ export const productsAPI = {
   getAll: () => api.get("/products"),
   getById: (id) => api.get(`/products/${id}`),
   getByCategory: (categoryId) => api.get(`/products/category/${categoryId}`),
+  search: (query) => api.get(`/products/search?q=${encodeURIComponent(query)}`),
 }
 
 // Cart API

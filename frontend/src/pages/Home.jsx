@@ -46,30 +46,29 @@ const Home = () => {
   }
 
   return (
-
     <>
-
       <CategoryNavigation />
       <Banner />
       <div className="container-fluid mt-4">
-
         {/* Products Section */}
         <div className="row mb-4">
           <div className="col-12">
             <h2 className="text-center mb-4">Featured Products</h2>
           </div>
         </div>
-        <div className="row mx-md-1">
+        
+        {/* Products Grid - 5 cards per row */}
+        <div className="row g-3">
           {products.map((product) => (
-            <div key={product.id} className="col-lg-3 col-md-6 mb-4">
-              <div onClick={() => handleProductClick(product.id)} style={{ cursor: "pointer" }}>
+            <div key={product.id} className="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-2">
+              <div onClick={() => handleProductClick(product.id)} style={{ cursor: "pointer", height: "100%" }}>
                 <ProductCard
                   image={`${process.env.REACT_APP_IMAGE_URL}/${product.image}`}
                   title={product.title}
                   price={product.price}
                   oldPrice={product.oldPrice}
                   discount={product.discount}
-                  rating={product.average_rating || 0}   // ✅ average from backend
+                  rating={product.average_rating || 0}
                   reviews={product.reviews ? product.reviews.length : 0}
                   productId={product.id}
                   stocks={product.stocks || 0}
@@ -89,11 +88,9 @@ const Home = () => {
             </div>
           </div>
         )}
-
       </div>
       <RecentlyViewed />
     </>
-
   )
 }
 

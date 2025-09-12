@@ -712,14 +712,13 @@
 }
 
 .btnWishlistActive {
-  background: #dc3545;
-  border-color: #dc3545;
+  background: #F97316; /* orange */
+  border-color: #F97316;
   color: white;
 }
-
 .btnWishlistActive:hover:not(:disabled) {
-  background: #c82333;
-  border-color: #c82333;
+  background: #ea580c;
+  border-color: #ea580c;
 }
 
 .btnOutline:disabled {

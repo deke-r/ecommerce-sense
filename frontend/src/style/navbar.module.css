@@ -1,34 +1,286 @@
-.navbarCustom {
-    font-family: "Poppins", sans-serif;
-    font-weight: 500;
+/* Flipkart-style Navbar */
+.navbar {
+  background-color: #2874f0;
+  padding: 0.75rem 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin-right: 2rem;
+}
+
+.logoImage {
+  height: 35px;
+  width: auto;
+}
+
+/* Search Container */
+.searchContainer {
+  flex: 1;
+  max-width: 500px;
+  position: relative;
+}
+
+.searchForm {
+  width: 100%;
+}
+
+.searchInputWrapper {
+  display: flex;
+  background: white;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  outline: none;
+  background: white;
+}
+
+.searchInput::placeholder {
+  color: #999;
+}
+
+.searchButton {
+  background: #ff9f00;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchButton:hover {
+  background: #ff8c00;
+}
+
+.clearButton {
+  background: #ff6b6b;
+  border: none;
+  padding: 0.75rem;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clearButton:hover {
+  background: #ff5252;
+}
+
+/* Search Suggestions Dropdown */
+.suggestionsDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.suggestionsHeader {
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.suggestionItem {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.suggestionItem:hover {
+  background-color: #f8f9fa;
+}
+
+.suggestionImage {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 0.75rem;
+}
+
+.suggestionInfo {
+  flex: 1;
+}
+
+.suggestionTitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 0.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.suggestionPrice {
+  font-size: 0.8rem;
+  color: #388e3c;
+  font-weight: 600;
+  margin-bottom: 0.125rem;
+}
+
+.suggestionCategory {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.suggestionsFooter {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  border-top: 1px solid #e0e0e0;
+  background: #f8f9fa;
+}
+
+.searchLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: #666;
+}
+
+.noSuggestions {
+  padding: 1rem;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+/* Actions Container */
+.actionsContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: 1rem;
+}
+
+.actionButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  position: relative;
+  min-width: 60px;
+}
+
+.actionButton:hover {
+  background-color: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.actionText {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  text-align: center;
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #ff6b6b;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+/* Active state */
+.active {
+  background-color: rgba(255,255,255,0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .searchContainer {
+    max-width: 300px;
   }
   
-  .logo {
-    height: 40px;
+  .actionsContainer {
+    gap: 0.5rem;
   }
   
-  .nav-link {
-    color: #333 !important;
-    font-weight: 500;
-    transition: all 0.3s ease;
+  .actionButton {
+    min-width: 50px;
   }
   
-  .nav-link:hover {
-    color: #2A55E5 !important;
-  }
-  
-  .active {
-    color: #2A55E5 !important;
-  }
-  
-  .cartBadge {
-    background-color: #dc3545;
-    color: #fff;
+  .actionText {
     font-size: 0.7rem;
-    border-radius: 50%;
-    padding: 1px 7px;
-    position: absolute;
-    top: 0;
-    right: -10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .searchContainer {
+    display: none;
   }
   
+  .actionsContainer {
+    gap: 0.25rem;
+  }
+  
+  .actionButton {
+    min-width: 40px;
+    padding: 0.25rem;
+  }
+  
+  .actionText {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .logo {
+    margin-right: 1rem;
+  }
+  
+  .logoImage {
+    height: 30px;
+  }
+}

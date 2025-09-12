@@ -14,6 +14,11 @@ const RecentlyViewed = () => {
   }, []);
 
   const fetchRecentlyViewed = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const response = await recentlyViewedAPI.getAll();
@@ -49,9 +54,9 @@ const RecentlyViewed = () => {
         <h3 className={styles.title}>Recently Viewed</h3>
       </div>
       
-      <div className={styles.productsGrid}>
+      <div className="row g-3">
         {recentlyViewed.slice(0, 4).map((item) => (
-          <div key={item.id} className={styles.productItem}>
+          <div key={item.id} className="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-2">
             <div onClick={() => handleProductClick(item.product_id)} className={styles.productClickable}>
               <ProductCard
                 image={`${process.env.REACT_APP_IMAGE_URL}/${item.image}`}
@@ -66,7 +71,8 @@ const RecentlyViewed = () => {
           </div>
         ))}
       </div>
-    </div>
+      </div>
+  
   );
 };
 

@@ -3,7 +3,7 @@ import styles from "../style/footer.module.css"
 
 export default function Footer() {
   return (
-    <footer className={`${styles.footer} bg-dark text-light py-5`}>
+    <footer className={`${styles.footer} mt-5 bg-dark text-light py-5`}>
       <div className="container">
         <div className="row">
           {/* About Section */}
@@ -54,7 +54,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Myntra
+                  {/* Myntra */}
                 </a>
               </li>
               <li>
@@ -64,12 +64,12 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Cleartrip
+                  {/* Cleartrip */}
                 </a>
               </li>
               <li>
                 <a href="https://www.shopsy.in" className={styles.footerLink} target="_blank" rel="noopener noreferrer">
-                  Shopsy
+                  {/* Shopsy */}
                 </a>
               </li>
             </ul>
@@ -154,12 +154,12 @@ export default function Footer() {
             <div className={styles.contactSection}>
               <h6 className={styles.footerHeading}>Mail Us:</h6>
               <div className={styles.addressText}>
-                <p>Company Internet Private Limited,</p>
+                {/* <p>Company Internet Private Limited,</p>
                 <p>Buildings Alyssa, Begonia &</p>
                 <p>Clove Embassy Tech Village,</p>
                 <p>Outer Ring Road, Devarabeesanahalli Village,</p>
                 <p>Bengaluru, 560103,</p>
-                <p>Karnataka, India</p>
+                <p>Karnataka, India</p> */}
               </div>
 
               <h6 className={`${styles.footerHeading} mt-4`}>Social:</h6>
@@ -236,13 +236,13 @@ export default function Footer() {
             <div className={`${styles.registeredOffice} mt-4`}>
               <h6 className={styles.footerHeading}>Registered Office Address:</h6>
               <div className={styles.addressText}>
-                <p>Company Internet Private Limited,</p>
+                {/* <p>Company Internet Private Limited,</p>
                 <p>Buildings Alyssa, Begonia &</p>
                 <p>Clove Embassy Tech Village,</p>
                 <p>Outer Ring Road, Devarabeesanahalli Village,</p>
                 <p>Bengaluru, 560103,</p>
                 <p>Karnataka, India</p>
-                <p>CIN : U51109KA2012PTC066107</p>
+                <p>CIN : U51109KA2012PTC066107</p> */}
                 <p>
                   Telephone:{" "}
                   <a href="tel:044-45614700" className={styles.phoneLink}>

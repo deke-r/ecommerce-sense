@@ -492,6 +492,51 @@ router.get("/category/:categoryId", async (req, res) => {
   }
 })
 
+// Search products endpoint
+router.get("/search", async (req, res) => {
+  try {
+    const { q } = req.query;
+    
+    if (!q || q.trim().length < 2) {
+      return res.json({ products: [] });
+    }
+
+    const con = getConnection();
+    const searchTerm = `%${q.trim()}%`;
+    
+    const [products] = await con.execute(`
+      SELECT 
+        p.id,
+        p.title,
+        p.price,
+        p.image,
+        p.stocks,
+        c.name as category_name,
+        IFNULL(AVG(r.star), 0) AS average_rating,
+        COUNT(r.id) AS reviews_count
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN reviews r ON p.id = r.product_id
+      WHERE p.title LIKE ? OR p.description LIKE ? OR c.name LIKE ?
+      GROUP BY p.id, p.title, p.price, p.image, p.stocks, c.name
+      ORDER BY 
+        CASE 
+          WHEN p.title LIKE ? THEN 1
+          WHEN p.description LIKE ? THEN 2
+          WHEN c.name LIKE ? THEN 3
+          ELSE 4
+        END,
+        p.title ASC
+      LIMIT 10
+    `, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm]);
+
+    res.json({ products });
+  } catch (error) {
+    console.error("Search products error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router
 
 
