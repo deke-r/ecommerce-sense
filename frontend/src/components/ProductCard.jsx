@@ -100,8 +100,8 @@ const ProductCard = ({image, title, price, oldPrice, discount, rating, reviews, 
             <span>Out of Stock</span>
           </div>
         )}
-        <button 
-          className={styles.wishlistBtn}
+           <button 
+          className={`${styles.wishlistBtn} ${isWishlisted ? styles.wishlistActive : ''}`}
           onClick={handleWishlistToggle}
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
         >

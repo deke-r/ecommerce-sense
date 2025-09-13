@@ -113,7 +113,7 @@ code {
 
 
 ::-webkit-scrollbar {
-  width: 10px;
+  /* width: 10px; */
   height: 8px;
 }
 
@@ -122,12 +122,7 @@ code {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--primary-color) !important;
   border-radius: 0px;
   border: 2px solid transparent;
   background-clip: content-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: #5ab95a;
 }
