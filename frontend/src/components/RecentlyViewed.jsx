@@ -54,7 +54,7 @@ const RecentlyViewed = () => {
         <h3 className={styles.title}>Recently Viewed</h3>
       </div>
       
-      <div className="row g-3">
+      <div className="row g-3 mx-2">
         {recentlyViewed.slice(0, 4).map((item) => (
           <div key={item.id} className="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-2">
             <div onClick={() => handleProductClick(item.product_id)} className={styles.productClickable}>

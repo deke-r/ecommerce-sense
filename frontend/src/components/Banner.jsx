@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { carouselAPI } from "../services/adminAPI"
-
+import styles from "../style/Banner.module.css"
 export const Banner = () => {
   const [images, setImages] = useState([])
   const [loading, setLoading] = useState(true)
@@ -51,7 +51,7 @@ export const Banner = () => {
                   src={image.image_url}
                   className="d-block w-100 "
                   alt={image.title || `Carousel image ${index + 1}`}
-                  style={{ height: "450px", objectFit: "cover" }}
+                  style={{ height: "250px", objectFit: "cover" }}
                 />
               </a>
             ) : (
@@ -59,7 +59,7 @@ export const Banner = () => {
                 src={image.image_url}
                 className="d-block w-100 "
                 alt={image.title || `Carousel image ${index + 1}`}
-                style={{ height: "450px", objectFit: "cover" }}
+                style={{ height: "250px", objectFit: "cover" }}
               />
             )}
             {(image.title || image.description) && (
@@ -75,7 +75,7 @@ export const Banner = () => {
       {images.length > 1 && (
         <>
           <button
-            className="carousel-control-prev"
+            className={`carousel-control-prev rounded-end-2 ${styles.leftBtn}`}
             type="button"
             data-bs-target="#carouselExampleFade"
             data-bs-slide="prev"
@@ -84,7 +84,7 @@ export const Banner = () => {
             <span className="visually-hidden">Previous</span>
           </button>
           <button
-            className="carousel-control-next"
+            className={`carousel-control-next rounded-start-2 ${styles.rightBtn}`}
             type="button"
             data-bs-target="#carouselExampleFade"
             data-bs-slide="next"

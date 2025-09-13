@@ -1,96 +1,77 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
-import { productsAPI } from "../services/api"
-import ProductCard from "../components/ProductCard"
 import CategoryNavigation from "../components/CategoryNavigation"
 import { Banner } from "../components/Banner"
 import RecentlyViewed from "../components/RecentlyViewed"
+import FeaturedProducts from "../components/FeaturedProducts"
+import CategorySection from "../components/CategorySection"
+import BestSellers from "../components/BestSellers"
+import NewsletterSignup from "../components/NewsletterSignup"
+import LoadingSpinner from "../components/LoadingSpinner"
+import styles from "../style/Home.module.css"
 
 const Home = () => {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [categories, setCategories] = useState([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
   const navigate = useNavigate()
 
-  useEffect(() => {
-    fetchProducts()
+  // Fetch categories
+  const fetchCategories = useCallback(async () => {
+    try {
+      setCategoriesLoading(true)
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/categories`)
+      const data = await response.json()
+      setCategories(data.categories || [])
+    } catch (error) {
+      console.error("Error fetching categories:", error)
+    } finally {
+      setCategoriesLoading(false)
+    }
   }, [])
 
-  const fetchProducts = async () => {
-    try {
-      const response = await productsAPI.getAll()
-      console.log('response', response)
-      setProducts(response.data.products)
-    } catch (error) {
-      console.error("Error fetching products:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    fetchCategories()
+  }, [fetchCategories])
 
   const handleProductClick = (productId) => {
     navigate(`/product/${productId}`)
   }
 
-  if (loading) {
-    return (
-      <div className="container mt-5">
-        <div className="text-center">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+  const handleCategoryClick = (categoryId, categoryName) => {
+    navigate(`/products/${categoryId}/${encodeURIComponent(categoryName)}`)
   }
 
   return (
-    <>
+    <div className={styles.homeContainer}>
       <CategoryNavigation />
       <Banner />
+      
       <div className="container-fluid mt-4">
-        {/* Products Section */}
-        <div className="row mb-4">
-          <div className="col-12">
-            <h2 className="text-center mb-4">Featured Products</h2>
-          </div>
-        </div>
-        
-        {/* Products Grid - 5 cards per row */}
-        <div className="row g-3">
-          {products.map((product) => (
-            <div key={product.id} className="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-2">
-              <div onClick={() => handleProductClick(product.id)} style={{ cursor: "pointer", height: "100%" }}>
-                <ProductCard
-                  image={`${process.env.REACT_APP_IMAGE_URL}/${product.image}`}
-                  title={product.title}
-                  price={product.price}
-                  oldPrice={product.oldPrice}
-                  discount={product.discount}
-                  rating={product.average_rating || 0}
-                  reviews={product.reviews ? product.reviews.length : 0}
-                  productId={product.id}
-                  stocks={product.stocks || 0}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* Featured Products Section */}
+        <FeaturedProducts onProductClick={handleProductClick} />
 
-        {products.length === 0 && (
-          <div className="row">
-            <div className="col-12 text-center">
-              <div className="alert alert-info">
-                <i className="bi bi-info-circle me-2"></i>
-                No products available at the moment.
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Category-based Product Sections */}
+        {!categoriesLoading && categories.slice(0, 4).map((category) => (
+          <CategorySection
+            key={category.id}
+            category={category}
+            onProductClick={handleProductClick}
+            onViewAllClick={() => handleCategoryClick(category.id, category.name)}
+          />
+        ))}
+
+        {/* Recently Viewed Section */}
+        <RecentlyViewed />
+
+        {/* Best Sellers Section */}
+        <BestSellers onProductClick={handleProductClick} />
+
+        {/* Newsletter Section */}
+        <NewsletterSignup />
       </div>
-      <RecentlyViewed />
-    </>
+    </div>
   )
 }
 

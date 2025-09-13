@@ -1,0 +1,26 @@
+.homeContainer {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding-bottom: 2rem;
+}
+
+/* Global section spacing */
+.section {
+  margin-bottom: 3rem;
+}
+
+/* Ensure proper spacing between sections */
+.section:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .homeContainer {
+    padding-bottom: 1rem;
+  }
+  
+  .section {
+    margin-bottom: 2rem;
+  }
+}
