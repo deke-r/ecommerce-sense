@@ -44,20 +44,13 @@ const CategorySection = ({ category, onProductClick, onViewAllClick }) => {
   }
 
   return (
-    <section className={styles.section}>
-      <div className={styles.sectionHeader}>
-        <div>
-          <h2 className={styles.sectionTitle}>{category.name}</h2>
-          <p className={styles.sectionSubtitle}>{category.description}</p>
-        </div>
-        <button 
-          className={styles.viewAllBtn}
-          onClick={onViewAllClick}
-        >
-          View All
-          <i className="bi bi-arrow-right ms-1"></i>
-        </button>
-      </div>
+    <section className='container-fluid my-3' >
+      <div className="row mx-md-1 shadow-sm" style={{backgroundColor:'white'}}>
+
+          <h3 className={styles.sectionTitle}>{category.name}</h3>
+          <p className='pb-0 mb-0'>{category.description}</p>
+  
+
       
       <div className="row g-3 mx-2">
         {products.map((product) => (
@@ -77,6 +70,19 @@ const CategorySection = ({ category, onProductClick, onViewAllClick }) => {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className='row pb-3'>
+        <div className='col-12 d-flex justify-content-center'>
+      <button 
+          className='btn btn-outline-primary rounded-4 f_14 fw-semibold border-0'
+          onClick={onViewAllClick}
+          >
+          View All
+            <i className="bi bi-arrow-right ms-1"></i>
+          </button>
+        </div>
+      </div>
       </div>
     </section>
   );

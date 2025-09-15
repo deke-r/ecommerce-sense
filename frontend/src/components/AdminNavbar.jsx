@@ -73,6 +73,11 @@ const AdminNavbar = () => {
               </li>
 
               <li className="nav-item">
+                <Link className={`nav-link f_13 fw-semibold me-4 ${isActive("/admin/col-3-banners")}`} to="/admin/col-3-banners">
+                 Col 3 Banners
+                </Link>
+              </li>
+              <li className="nav-item">
                 <Link className={`nav-link f_13 fw-semibold me-4 ${isActive("/admin/carousel")}`} to="/admin/carousel">
                   Banners
                 </Link>

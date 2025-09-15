@@ -54,13 +54,12 @@ const FeaturedProducts = ({ onProductClick }) => {
   }
 
   return (
-    <section className={styles.section}>
-      <div className={styles.sectionHeader}>
-        <div>
-          <h2 className={styles.sectionTitle}>Featured Products</h2>
-          <p className={styles.sectionSubtitle}>Handpicked items just for you</p>
-        </div>
-      </div>
+    <section className='container-fluid ' >
+      <div className="row mx-md-1 shadow-sm" style={{backgroundColor:'white'}}>
+
+          <h3 className=''>Featured Products</h3>
+          <p className='mb-0 pb-0'>Handpicked items just for you</p>
+
       
       <div className="row g-3 mx-2">
         {products.map((product) => (
@@ -92,6 +91,8 @@ const FeaturedProducts = ({ onProductClick }) => {
           </div>
         </div>
       )}
+      </div>
+
     </section>
   );
 };

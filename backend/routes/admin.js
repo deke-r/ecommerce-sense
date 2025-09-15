@@ -475,4 +475,103 @@ router.delete("/carousel/:id", verifyToken, verifyAdmin, async (req, res) => {
   }
 })
 
+
+
+
+// col3 banners--------------------------
+
+
+router.get("/banners", async (req, res) => {
+  const con = getConnection()
+  try {
+    const [rows] = await con.query("SELECT * FROM banners ORDER BY id ASC");
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching banners" });
+  }
+});
+
+// ✅ ADD banner (max 3)
+router.post("/banners", upload.single("image"), async (req, res) => {
+  const con = getConnection()
+  try {
+    const [rows] = await con.query("SELECT COUNT(*) as count FROM banners");
+    if (rows[0].count >= 3) {
+      return res.status(400).json({ message: "Maximum 3 banners allowed" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Image is required" });
+    }
+
+    const { link_url } = req.body; // optional
+    const imageUrl = `${req.file.filename}`;
+
+    await con.query(
+      "INSERT INTO banners (image_url, link_url) VALUES (?, ?)",
+      [imageUrl, link_url || null]
+    );
+
+    res.json({ message: "Banner added successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error adding banner" });
+  }
+});
+
+// ✅ UPDATE banner (optional link change, optional new image)
+router.put("/banners/:id", upload.single("image"), async (req, res) => {
+  const con = getConnection()
+  try {
+    const { id } = req.params;
+    const { link_url } = req.body;
+
+    let query = "UPDATE banners SET link_url = ? WHERE id = ?";
+    let params = [link_url || null, id];
+
+    if (req.file) {
+      // Delete old image
+      const [old] = await con.query("SELECT image_url FROM banners WHERE id = ?", [id]);
+      if (old.length && old[0].image_url) {
+        const oldPath = path.join(process.cwd(), "uploads", "banners", path.basename(old[0].image_url));
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+
+      const imageUrl = `/uploads/banners/${req.file.filename}`;
+      query = "UPDATE banners SET image_url = ?, link_url = ? WHERE id = ?";
+      params = [imageUrl, link_url || null, id];
+    }
+
+    await con.query(query, params);
+
+    res.json({ message: "Banner updated successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error updating banner" });
+  }
+});
+
+// ✅ DELETE banner
+router.delete("/banners/:id", async (req, res) => {
+  const con = getConnection()
+  try {
+    const { id } = req.params;
+
+    // delete image file
+    const [rows] = await con.query("SELECT image_url FROM banners WHERE id = ?", [id]);
+    if (rows.length && rows[0].image_url) {
+      const filePath = path.join(process.cwd(), "uploads", "banners", path.basename(rows[0].image_url));
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    }
+
+    await con.query("DELETE FROM banners WHERE id = ?", [id]);
+    res.json({ message: "Banner deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error deleting banner" });
+  }
+});
+
+// col3 banners -------------------- 
+
 module.exports = router

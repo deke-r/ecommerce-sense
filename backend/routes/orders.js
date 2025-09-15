@@ -1,6 +1,7 @@
 const express = require("express")
 const { getConnection } = require("../config/database")
 const { verifyToken } = require("../middleware/auth")
+const cartAbandonmentService = require("../services/cartAbandonmentService")
 
 const router = express.Router()
 
@@ -54,6 +55,9 @@ router.post("/", verifyToken, async (req, res) => {
 
       // Clear cart
       await con.execute("DELETE FROM cart WHERE user_id = ?", [req.user.id])
+
+      // Mark cart as purchased for abandonment tracking
+      await cartAbandonmentService.markAsPurchased(req.user.id)
 
       // Commit transaction
       await con.execute("COMMIT")

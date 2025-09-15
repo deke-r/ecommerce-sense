@@ -1,6 +1,7 @@
 const express = require("express")
 const { getConnection } = require("../config/database")
 const { verifyToken } = require("../middleware/auth")
+const cartAbandonmentService = require("../services/cartAbandonmentService")
 
 const router = express.Router()
 
@@ -17,6 +18,11 @@ router.get("/", verifyToken, async (req, res) => {
     `,
       [req.user.id],
     )
+
+    // Track cart abandonment for non-empty carts
+    if (cartItems.length > 0) {
+      await cartAbandonmentService.trackCartUpdate(req.user.id, cartItems)
+    }
 
     res.json({ cartItems })
   } catch (error) {
@@ -81,6 +87,22 @@ router.post("/", verifyToken, async (req, res) => {
       ])
     }
 
+    // Get updated cart items for tracking
+    const [updatedCartItems] = await con.execute(
+      `
+      SELECT c.id, c.quantity, p.id as product_id, p.title, p.price, p.image, p.stocks
+      FROM cart c
+      JOIN products p ON c.product_id = p.id
+      WHERE c.user_id = ?
+    `,
+      [req.user.id],
+    )
+
+    // Track cart abandonment
+    if (updatedCartItems.length > 0) {
+      await cartAbandonmentService.trackCartUpdate(req.user.id, updatedCartItems)
+    }
+
     res.json({ message: "Item added to cart successfully" })
   } catch (error) {
     console.error("Add to cart error:", error)
@@ -124,6 +146,22 @@ router.put("/:id", verifyToken, async (req, res) => {
 
     await con.execute("UPDATE cart SET quantity = ? WHERE id = ?", [quantity, id])
 
+    // Get updated cart items for tracking
+    const [updatedCartItems] = await con.execute(
+      `
+      SELECT c.id, c.quantity, p.id as product_id, p.title, p.price, p.image, p.stocks
+      FROM cart c
+      JOIN products p ON c.product_id = p.id
+      WHERE c.user_id = ?
+    `,
+      [req.user.id],
+    )
+
+    // Track cart abandonment
+    if (updatedCartItems.length > 0) {
+      await cartAbandonmentService.trackCartUpdate(req.user.id, updatedCartItems)
+    }
+
     res.json({ message: "Cart updated successfully" })
   } catch (error) {
     console.error("Update cart error:", error)
@@ -145,6 +183,20 @@ router.delete("/:id", verifyToken, async (req, res) => {
     }
 
     await con.execute("DELETE FROM cart WHERE id = ?", [id])
+
+    // Get updated cart items for tracking
+    const [updatedCartItems] = await con.execute(
+      `
+      SELECT c.id, c.quantity, p.id as product_id, p.title, p.price, p.image, p.stocks
+      FROM cart c
+      JOIN products p ON c.product_id = p.id
+      WHERE c.user_id = ?
+    `,
+      [req.user.id],
+    )
+
+    // Track cart abandonment (even if empty, to reset tracking)
+    await cartAbandonmentService.trackCartUpdate(req.user.id, updatedCartItems)
 
     res.json({ message: "Item removed from cart successfully" })
   } catch (error) {

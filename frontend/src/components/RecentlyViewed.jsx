@@ -49,10 +49,10 @@ const RecentlyViewed = () => {
   }
 
   return (
-    <div className={styles.recentlyViewedContainer}>
-      <div className={styles.header}>
-        <h3 className={styles.title}>Recently Viewed</h3>
-      </div>
+    <section className='container-fluid my-3' >
+      <div className="row mx-md-1 shadow-sm" style={{backgroundColor:'white'}}> 
+    
+        <h3 className=''>Recently Viewed</h3>
       
       <div className="row g-3 mx-2">
         {recentlyViewed.slice(0, 4).map((item) => (
@@ -72,6 +72,7 @@ const RecentlyViewed = () => {
         ))}
       </div>
       </div>
+      </section>
   
   );
 };

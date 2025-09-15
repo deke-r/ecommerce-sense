@@ -14,29 +14,29 @@ const UserMenu = ({ isLoggedIn, user, cartCount, wishlistCount, handleLogout }) 
 
         <li className="nav-item">
           <Link className="nav-link text-white position-relative" to="/wishlist">
-            <Heart size={18} className="me-1" /> <span className="d-lg-inline d-none">Wishlist</span>
-            {wishlistCount > 0 && <span className={styles.badge}>{wishlistCount}</span>}
+            <Heart size={16} className="me-1" /> <span className="d-lg-inline d-none f_14 fw-semibold">Wishlist</span>
+            {wishlistCount > 0 && <span className={`${styles.badge}`}>{wishlistCount}</span>}
           </Link>
         </li>
 
         <li className="nav-item">
           <Link className="nav-link text-white position-relative" to="/cart">
-            <ShoppingCart size={18} className="me-1" /> <span className="d-lg-inline d-none">Cart</span>
+            <ShoppingCart size={16} className="me-1" /> <span className="d-lg-inline d-none f_14 fw-semibold ">Cart</span>
             {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
           </Link>
         </li>
 
         <li className="nav-item dropdown">
           <a className="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-            <User size={18} className="me-1" />
-            <span className="d-lg-inline d-none">{user?.name || "Profile"}</span>
+            <User size={16} className="me-1" />
+            <span className="d-lg-inline d-none f_14 fw-semibold">{user?.name || "Profile"}</span>
           </a>
-          <ul className="dropdown-menu dropdown-menu-end">
-            <li><Link className="dropdown-item" to="/profile"><User size={16} className="me-2" /> Profile</Link></li>
-            <li><Link className="dropdown-item" to="/orders"><Package size={16} className="me-2" /> My Orders</Link></li>
-            <li><Link className="dropdown-item" to="/user/addresses"><MapPinPlus size={16} className="me-2" /> My Address</Link></li>
+          <ul className="dropdown-menu dropdown-menu-end rounded-0">
+            <li><Link className="dropdown-item f_14 fw-semibold" to="/profile"><User size={16} className="me-2" /> Profile</Link></li>
+            <li><Link className="dropdown-item f_14 fw-semibold" to="/orders"><Package size={16} className="me-2" /> My Orders</Link></li>
+            <li><Link className="dropdown-item f_14 fw-semibold" to="/user/addresses"><MapPinPlus size={16} className="me-2" /> My Address</Link></li>
             <li><hr className="dropdown-divider" /></li>
-            <li><button className="dropdown-item text-danger" onClick={handleLogout}><LogOut size={16} className="me-2" /> Logout</button></li>
+            <li><button className="dropdown-item text-danger f_14 fw-semibold" onClick={handleLogout}><LogOut size={16} className="me-2" /> Logout</button></li>
           </ul>
         </li>
       </>

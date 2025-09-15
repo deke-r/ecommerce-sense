@@ -29,6 +29,7 @@ import ScrollToTop from "./components/ScrollToTop"
 import Wishlist from "./pages/Wishlist"
 import Contact from "./pages/Contact"
 import FAQ from "./pages/FAQ"
+import AdminBanners from "./pages/admin/AdminBanners"
 
 function App() {
   const location = useLocation()
@@ -136,6 +137,14 @@ function App() {
             element={
               <AdminProtectedRoute>
                 <AdminCategories />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/col-3-banners"
+            element={
+              <AdminProtectedRoute>
+                <AdminBanners />
               </AdminProtectedRoute>
             }
           />

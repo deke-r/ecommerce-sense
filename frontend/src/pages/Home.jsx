@@ -11,6 +11,7 @@ import BestSellers from "../components/BestSellers"
 import NewsletterSignup from "../components/NewsletterSignup"
 import LoadingSpinner from "../components/LoadingSpinner"
 import styles from "../style/Home.module.css"
+import Col3Banner from "../components/Col3Banner"
 
 const Home = () => {
   const [categories, setCategories] = useState([])
@@ -51,7 +52,9 @@ const Home = () => {
       <div className="container-fluid mt-4">
         {/* Featured Products Section */}
         <FeaturedProducts onProductClick={handleProductClick} />
+        <RecentlyViewed />
 
+        <Col3Banner/>
         {/* Category-based Product Sections */}
         {!categoriesLoading && categories.slice(0, 4).map((category) => (
           <CategorySection
@@ -63,13 +66,12 @@ const Home = () => {
         ))}
 
         {/* Recently Viewed Section */}
-        <RecentlyViewed />
+      
 
         {/* Best Sellers Section */}
         <BestSellers onProductClick={handleProductClick} />
 
-        {/* Newsletter Section */}
-        <NewsletterSignup />
+    
       </div>
     </div>
   )

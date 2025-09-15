@@ -100,4 +100,21 @@ export const carouselAPI = {
   delete: (id) => adminAPI.delete(`/admin/carousel/${id}`),
 }
 
+
+
+// ---------------- Banners API ---------------- //
+export const adminBannersAPI = {
+  // Get all banners
+  getAll: () => adminAPI.get("/admin/banners"),
+
+  // Create new banner (image only, max 3)
+  create: (formData) =>
+    adminAPI.post("/admin/banners", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+
+  // Delete banner
+  delete: (id) => adminAPI.delete(`/admin/banners/${id}`),
+}
+
 export default adminAPI

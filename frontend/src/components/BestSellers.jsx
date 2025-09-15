@@ -54,13 +54,10 @@ const BestSellers = ({ onProductClick }) => {
   }
 
   return (
-    <section className={styles.section}>
-      <div className={styles.sectionHeader}>
-        <div>
-          <h2 className={styles.sectionTitle}>Best Sellers</h2>
-          <p className={styles.sectionSubtitle}>Most popular items this week</p>
-        </div>
-      </div>
+    <section className='container-fluid my-3' >
+      <div className="row mx-md-1 shadow-sm" style={{backgroundColor:'white'}}> 
+          <h3 className=''>Best Sellers</h3>
+
       
       <div className="row g-3 mx-2">
         {products.map((product) => (
@@ -92,6 +89,7 @@ const BestSellers = ({ onProductClick }) => {
           </div>
         </div>
       )}
+      </div>
     </section>
   );
 };

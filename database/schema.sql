@@ -178,6 +178,22 @@ CREATE TABLE product_views (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
+-- Cart abandonment tracking table
+CREATE TABLE cart_abandonment (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    cart_data JSON NOT NULL,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    email_sent_at TIMESTAMP NULL,
+    email_type ENUM('first_reminder', 'second_reminder', 'final_reminder') NULL,
+    is_purchased TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Add stocks column to products table if not exists
+ALTER TABLE products ADD COLUMN IF NOT EXISTS stocks INT DEFAULT 0;
+
 -- Insert default admin user (password: admin123)
 INSERT INTO users (name, email, password, phone, role) VALUES 
 ('Admin User', 'admin@ecommerce.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '1234567890', 'admin');
