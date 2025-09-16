@@ -167,7 +167,7 @@ const AllReviews = () => {
             className={styles.backBtn}
             onClick={() => navigate(-1)}
           >
-            ← Back
+            ← Back to Product
           </button>
           <div className={styles.productInfo}>
             <img 
@@ -175,28 +175,55 @@ const AllReviews = () => {
               alt={product.title}
               className={styles.productImage}
             />
-            <div>
+            <div className={styles.productDetails}>
               <h1 className={styles.productTitle}>{product.title}</h1>
               <div className={styles.ratingSummary}>
-                <span className={styles.ratingNumber}>{rating.average}</span>
-                <div className={styles.ratingStars}>
-                  {renderStars(Math.round(parseFloat(rating.average)))}
+                <div className={styles.ratingLeft}>
+                  <span className={styles.ratingNumber}>{rating.average}</span>
+                  <div className={styles.ratingStars}>
+                    {renderStars(Math.round(parseFloat(rating.average)))}
+                  </div>
+                  <span className={styles.ratingCount}>{rating.total} reviews</span>
                 </div>
-                <span className={styles.ratingCount}>({rating.total} reviews)</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className={styles.content}>
-          {/* Rating Distribution */}
+          {/* Rating Distribution Sidebar */}
           <div className={styles.sidebar}>
-            {renderRatingDistribution()}
+            <div className={styles.ratingCard}>
+              <h3>Rating Breakdown</h3>
+              {renderRatingDistribution()}
+            </div>
+            
+            <div className={styles.filtersCard}>
+              <h3>Filter Reviews</h3>
+              <div className={styles.filterOptions}>
+                <button className={styles.filterBtn}>All Reviews</button>
+                <button className={styles.filterBtn}>5 Star</button>
+                <button className={styles.filterBtn}>4 Star</button>
+                <button className={styles.filterBtn}>3 Star</button>
+                <button className={styles.filterBtn}>2 Star</button>
+                <button className={styles.filterBtn}>1 Star</button>
+              </div>
+            </div>
           </div>
 
           {/* Reviews List */}
           <div className={styles.reviewsContainer}>
-            <h2>All Reviews</h2>
+            <div className={styles.reviewsHeader}>
+              <h2>Customer Reviews</h2>
+              <div className={styles.sortOptions}>
+                <select className={styles.sortSelect}>
+                  <option>Most Recent</option>
+                  <option>Most Helpful</option>
+                  <option>Highest Rating</option>
+                  <option>Lowest Rating</option>
+                </select>
+              </div>
+            </div>
             
             {reviews.length > 0 ? (
               <>
@@ -204,24 +231,46 @@ const AllReviews = () => {
                   {reviews.map((review) => (
                     <div key={review.id} className={styles.reviewCard}>
                       <div className={styles.reviewHeader}>
-                        <div className={styles.reviewRating}>{renderStars(review.star)}</div>
+                        <div className={styles.reviewerInfo}>
+                          <div className={styles.reviewerAvatar}>
+                            {review.user_name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className={styles.reviewerDetails}>
+                            <div className={styles.reviewerName}>{review.user_name}</div>
+                            <div className={styles.reviewRating}>
+                              {renderStars(review.star)}
+                            </div>
+                          </div>
+                        </div>
                         <div className={styles.reviewDate}>{formatDate(review.created_at)}</div>
                       </div>
-                      <div className={styles.reviewComment}>{review.comment}</div>
-                      {review.images && review.images.length > 0 && (
-                        <div className={styles.reviewImages}>
-                          {review.images.map((img) => (
-                            <img
-                              key={img.id}
-                              src={`${process.env.REACT_APP_IMAGE_URL}/${img.image_url}`}
-                              alt="Review"
-                              className={styles.reviewImage}
-                              onClick={() => window.open(`${process.env.REACT_APP_IMAGE_URL}/${img.image_url}`, '_blank')}
-                            />
-                          ))}
-                        </div>
-                      )}
-                      <div className={styles.reviewAuthor}>By {review.user_name}</div>
+                      
+                      <div className={styles.reviewContent}>
+                        <p className={styles.reviewComment}>{review.comment}</p>
+                        
+                        {review.images && review.images.length > 0 && (
+                          <div className={styles.reviewImages}>
+                            {review.images.map((img) => (
+                              <img
+                                key={img.id}
+                                src={`${process.env.REACT_APP_IMAGE_URL}/${img.image_url}`}
+                                alt="Review"
+                                className={styles.reviewImage}
+                                onClick={() => window.open(`${process.env.REACT_APP_IMAGE_URL}/${img.image_url}`, '_blank')}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className={styles.reviewActions}>
+                        <button className={styles.helpfulBtn}>
+                          <span>👍</span> Helpful ({Math.floor(Math.random() * 50)})
+                        </button>
+                        <button className={styles.reportBtn}>
+                          Report
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -231,7 +280,15 @@ const AllReviews = () => {
               </>
             ) : (
               <div className={styles.noReviews}>
-                No reviews found for this product.
+                <div className={styles.noReviewsIcon}>📝</div>
+                <h3>No reviews yet</h3>
+                <p>Be the first to review this product!</p>
+                <button 
+                  className={styles.writeFirstReviewBtn}
+                  onClick={() => navigate(`/product/${productId}`)}
+                >
+                  Write a Review
+                </button>
               </div>
             )}
           </div>

@@ -5,6 +5,7 @@ import Home from "./pages/Home"
 import ProductDetails from "./pages/ProductDetails"
 import Cart from "./pages/Cart"
 import Address from "./pages/Address"
+import Payment from "./pages/Payment"
 import Orders from "./pages/Orders"
 import Profile from "./pages/Profile"
 import Login from "./pages/Login"
@@ -18,6 +19,7 @@ import AdminProducts from "./pages/admin/AdminProducts"
 import AdminOrders from "./pages/admin/AdminOrders"
 import AdminUsers from "./pages/admin/AdminUsers"
 import AdminCategories from "./pages/admin/AdminCategories"
+import AdminCoupons from "./pages/admin/AdminCoupons"
 import AdminProtectedRoute from "./components/AdminProtectedRoute"
 import ProductsByCategory from "./pages/ProductsByCategory"
 import AllProducts from "./pages/AllProducts"
@@ -71,6 +73,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Address />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment"
+            element={
+              <ProtectedRoute>
+                <Payment />
               </ProtectedRoute>
             }
           />
@@ -137,6 +147,14 @@ function App() {
             element={
               <AdminProtectedRoute>
                 <AdminCategories />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/coupons"
+            element={
+              <AdminProtectedRoute>
+                <AdminCoupons />
               </AdminProtectedRoute>
             }
           />

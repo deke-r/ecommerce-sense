@@ -21,6 +21,7 @@ const newsletterRoutes = require('./routes/newsletter')
 const contactRoutes = require('./routes/contact')
 const faqRoutes = require('./routes/faq')
 const analyticsRoutes = require('./routes/analytics')
+const couponRoutes = require('./routes/coupons')
 
 // Add these route uses
 app.use('/api/wishlist', wishlistRoutes)
@@ -29,6 +30,7 @@ app.use('/api/newsletter', newsletterRoutes)
 app.use('/api/contact', contactRoutes)
 app.use('/api/faq', faqRoutes)
 app.use('/api/analytics', analyticsRoutes)
+app.use('/api/coupons', couponRoutes)
 
 // Routes
 app.use("/api/auth", require("./routes/auth"))

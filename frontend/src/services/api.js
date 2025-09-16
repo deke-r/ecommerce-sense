@@ -1,6 +1,7 @@
 import axios from "axios"
 
-const API_BASE_URL = "http://localhost:5000/api"
+const API_BASE_URL = `${process.env.REACT_APP_BACKEND_URL}/api`
+
 
 // Create axios instance
 const api = axios.create({
@@ -109,6 +110,18 @@ export const faqAPI = {
 export const analyticsAPI = {
   trackView: (productId, userId) => api.post("/analytics/track-view", { product_id: productId, user_id: userId }),
   getProductAnalytics: () => api.get("/analytics/products"),
+}
+
+// Coupons API
+export const couponsAPI = {
+  getAll: () => api.get("/coupons"),
+  validate: (code, orderAmount) => api.post("/coupons/validate", { code, orderAmount }),
+  apply: (couponId, orderId) => api.post("/coupons/apply", { couponId, orderId }),
+  // Admin APIs
+  create: (couponData) => api.post("/coupons/admin", couponData),
+  getAllAdmin: () => api.get("/coupons/admin"),
+  update: (id, couponData) => api.put(`/coupons/admin/${id}`, couponData),
+  delete: (id) => api.delete(`/coupons/admin/${id}`),
 }
 
 export default api

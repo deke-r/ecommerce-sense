@@ -32,14 +32,20 @@ router.post("/", verifyToken, async (req, res) => {
     }
 
     // Calculate total
-    const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    const tax = subtotal * 0.1 // 10% tax
+    const { coupon_id, discount_amount = 0 } = req.body
+    const total = subtotal + tax - discount_amount
 
     // Start transaction
     await con.execute("START TRANSACTION")
 
     try {
       // Create order
-      const [orderResult] = await con.execute("INSERT INTO orders (user_id, total) VALUES (?, ?)", [req.user.id, total])
+      const [orderResult] = await con.execute(
+        "INSERT INTO orders (user_id, total, status) VALUES (?, ?, 'pending')",
+        [req.user.id, total]
+      )
 
       const orderId = orderResult.insertId
 
@@ -51,6 +57,20 @@ router.post("/", verifyToken, async (req, res) => {
           item.quantity,
           item.price,
         ])
+      }
+
+      // Apply coupon if provided
+      if (coupon_id && discount_amount > 0) {
+        await con.execute(
+          "INSERT INTO coupon_usage (coupon_id, user_id, order_id) VALUES (?, ?, ?)",
+          [coupon_id, req.user.id, orderId]
+        )
+        
+        // Update coupon usage count
+        await con.execute(
+          "UPDATE coupons SET used_count = used_count + 1 WHERE id = ?",
+          [coupon_id]
+        )
       }
 
       // Clear cart

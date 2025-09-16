@@ -1,0 +1,405 @@
+/* Product Reviews Container */
+.reviewsContainer {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* Rating Summary */
+.ratingSummary {
+  margin-bottom: 24px;
+}
+
+.ratingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.ratingTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: #212121;
+  margin: 0;
+}
+
+.writeReviewBtn {
+  background: #2874f0;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.writeReviewBtn:hover {
+  background: #1e3fb8;
+}
+
+.averageRating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  text-align: center;
+  height: 100%;
+}
+
+.ratingNumber {
+  font-size: 32px;
+  font-weight: 600;
+  color: #2874f0;
+  line-height: 1;
+}
+
+.ratingStars {
+  display: flex;
+  gap: 2px;
+}
+
+.ratingCount {
+  font-size: 14px;
+  color: #878787;
+  font-weight: 500;
+}
+
+.ratingBreakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ratingBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.starLabel {
+  min-width: 30px;
+  color: #212121;
+  font-weight: 500;
+}
+
+.progressBar {
+  flex: 1;
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #2874f0;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.percentage {
+  min-width: 35px;
+  text-align: right;
+  color: #878787;
+  font-size: 12px;
+}
+
+.noRating {
+  text-align: center;
+  padding: 24px;
+  color: #878787;
+}
+
+.beFirstBtn {
+  background: #2874f0;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.beFirstBtn:hover {
+  background: #1e3fb8;
+}
+
+/* Recent Reviews */
+.recentReviews {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 20px;
+}
+
+.reviewsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.reviewsHeader h4 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #212121;
+  margin: 0;
+}
+
+.viewAllBtn {
+  background: none;
+  border: 1px solid #2874f0;
+  color: #2874f0;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewAllBtn:hover {
+  background: #2874f0;
+  color: white;
+}
+
+/* Recent Reviews Grid - handled by Bootstrap */
+
+.loadingSpinner {
+  text-align: center;
+  color: #878787;
+  padding: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.reviewCard {
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fafafa;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.reviewerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reviewerName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #212121;
+}
+
+.reviewRating {
+  display: flex;
+  gap: 1px;
+}
+
+.reviewDate {
+  font-size: 12px;
+  color: #878787;
+}
+
+.reviewContent {
+  margin-bottom: 12px;
+}
+
+.reviewComment {
+  font-size: 14px;
+  color: #212121;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.reviewImages {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.reviewImage {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s ease;
+}
+
+.reviewImage:hover {
+  transform: scale(1.05);
+}
+
+.moreImages {
+  font-size: 12px;
+  color: #2874f0;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.reviewActions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.helpfulBtn {
+  background: none;
+  border: none;
+  color: #878787;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.helpfulBtn:hover {
+  background: #f0f0f0;
+  color: #212121;
+}
+
+.reportBtn {
+  background: none;
+  border: none;
+  color: #878787;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.reportBtn:hover {
+  background: #f0f0f0;
+  color: #212121;
+}
+
+/* Review Guidelines */
+.reviewGuidelines {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.reviewGuidelines h5 {
+  font-size: 14px;
+  font-weight: 500;
+  color: #212121;
+  margin: 0 0 12px 0;
+}
+
+.reviewGuidelines ul {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 12px;
+  color: #878787;
+  line-height: 1.5;
+}
+
+.reviewGuidelines li {
+  margin-bottom: 4px;
+}
+
+/* Star Styles */
+.star {
+  font-size: 0.9rem;
+  color: #ddd;
+  transition: color 0.2s ease;
+}
+
+.starFilled {
+  color: #ffb400;
+}
+
+.starEmpty {
+  color: #e0e0e0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reviewsContainer {
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .ratingOverview {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ratingLeft {
+    min-width: auto;
+  }
+
+  .ratingHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .writeReviewBtn {
+    width: 100%;
+  }
+
+  .reviewHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .reviewActions {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ratingNumber {
+    font-size: 24px;
+  }
+
+  .ratingStars {
+    gap: 1px;
+  }
+
+  .star {
+    font-size: 0.8rem;
+  }
+
+  .reviewImage {
+    width: 50px;
+    height: 50px;
+  }
+}

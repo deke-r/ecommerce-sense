@@ -99,6 +99,11 @@ const AdminNavbar = () => {
                   Orders
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link className={`nav-link f_13 fw-semibold me-4 ${isActive("/admin/coupons")}`} to="/admin/coupons">
+                  Coupons
+                </Link>
+              </li>
             
 
               <li className="nav-item dropdown">

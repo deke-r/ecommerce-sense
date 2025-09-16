@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { cartAPI, addressAPI } from "../services/api"
 import Addresses from './Addresses'
+import CouponCode from '../components/CouponCode'
 
 const Address = () => {
   const [addresses, setAddresses] = useState([])
@@ -11,6 +12,8 @@ const Address = () => {
   const [cartItems, setCartItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [cartLoading, setCartLoading] = useState(true)
+  const [appliedCoupon, setAppliedCoupon] = useState(null)
+  const [discountAmount, setDiscountAmount] = useState(0)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -62,7 +65,20 @@ const Address = () => {
   }
 
   const calculateTotal = () => {
-    return (Number.parseFloat(calculateSubtotal()) + Number.parseFloat(calculateTax())).toFixed(2)
+    const subtotal = Number.parseFloat(calculateSubtotal())
+    const tax = Number.parseFloat(calculateTax())
+    const total = subtotal + tax - discountAmount
+    return Math.max(0, total).toFixed(2)
+  }
+
+  const handleCouponApplied = (coupon, discount) => {
+    setAppliedCoupon(coupon)
+    setDiscountAmount(discount)
+  }
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null)
+    setDiscountAmount(0)
   }
 
   const handleProceedToPayment = () => {
@@ -82,6 +98,8 @@ const Address = () => {
       cartItems: cartItems,
       subtotal: calculateSubtotal(),
       tax: calculateTax(),
+      discount: discountAmount,
+      appliedCoupon: appliedCoupon,
       total: calculateTotal()
     }
     
@@ -108,6 +126,14 @@ const Address = () => {
           <Addresses 
             onAddressSelect={handleAddressSelect}
             selectedAddress={selectedAddress}
+          />
+          
+          {/* Coupon Code Section */}
+          <CouponCode 
+            orderAmount={calculateSubtotal()}
+            onCouponApplied={handleCouponApplied}
+            appliedCoupon={appliedCoupon}
+            onRemoveCoupon={handleRemoveCoupon}
           />
         </div>
 
@@ -167,6 +193,12 @@ const Address = () => {
                       <span>Tax (10%):</span>
                       <span>₹{calculateTax()}</span>
                     </div>
+                    {discountAmount > 0 && (
+                      <div className="d-flex justify-content-between mb-1 text-success">
+                        <span>Discount ({appliedCoupon?.code}):</span>
+                        <span>-₹{discountAmount.toFixed(2)}</span>
+                      </div>
+                    )}
                     <hr />
                     <div className="d-flex justify-content-between mb-3">
                       <strong>Total:</strong>

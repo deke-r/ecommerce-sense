@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { productsAPI, cartAPI } from "../services/api"
 import axios from "axios"
 import ReviewsSection from "../components/ReviewsSection"
+import ProductReviews from "../components/ProductReviews"
 import styles from "../style/ProductDetails.module.css"
 import SimilarItems from "../components/SimilarItems"
 import { FaHeart, FaRegHeart } from "react-icons/fa"
@@ -251,10 +252,11 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className={`container-fluid my-3`}>
-      <div className="row mx-md-1">
+    <div className={`container-fluid my-2`}>
+      {/* Breadcrumb Navigation */}
+      <div className="row mx-1">
 
-   <nav aria-label="breadcrumb" className={styles.breadcrumbNav}>
+      <nav aria-label="breadcrumb" className={styles.breadcrumbNav}>
         <ol className={styles.breadcrumb}>
           <li className={styles.breadcrumbItem}>
             <button className={styles.breadcrumbLink} onClick={() => handleBreadcrumbClick("/")}>
@@ -265,8 +267,10 @@ const ProductDetails = () => {
         </ol>
       </nav>
 
+      {/* Main Product Section */}
       <div className={styles.container}>
         <div className={styles.productSection}>
+          {/* Product Images */}
           <div className={styles.imageContainer}>
             <div className={styles.carouselContainer}>
               <div className={styles.mainImageWrapper}>
@@ -321,19 +325,55 @@ const ProductDetails = () => {
             </div>
           </div>
 
+          {/* Product Information */}
           <div className={styles.productInfo}>
-            <h4 className={styles.productTitle}>{product.title}</h4>
+            <h1 className={styles.productTitle}>{product.title}</h1>
             <p className={styles.productDescription}>{product.description}</p>
 
-            <div className={styles.priceSection}>
-              <span className={styles.price}>₹{product.price}</span>
+            {/* Rating and Reviews */}
+            <div className={styles.ratingSection}>
+              <div className={styles.rating}>
+                <span className={styles.ratingStars}>★★★★☆</span>
+                <span className={styles.ratingText}>(4.2) 1,234 ratings</span>
+              </div>
             </div>
 
+            {/* Price Section */}
+            <div className={styles.priceSection}>
+              <div className={styles.priceContainer}>
+                <span className={styles.currentPrice}>₹{product.price}</span>
+                <span className={styles.originalPrice}>₹{Math.round(product.price * 1.2)}</span>
+                <span className={styles.discount}>20% off</span>
+              </div>
+              <div className={styles.priceDetails}>
+                <p className={styles.taxInfo}>Inclusive of all taxes</p>
+              </div>
+            </div>
+
+            {/* Offers Section */}
+            <div className={styles.offersSection}>
+              <h3 className={styles.offersTitle}>Available offers</h3>
+              <div className={styles.offerItem}>
+                <span className={styles.offerIcon}>🎁</span>
+                <span className={styles.offerText}>Bank Offer 5% Cashback on Flipkart Axis Bank Card</span>
+              </div>
+              <div className={styles.offerItem}>
+                <span className={styles.offerIcon}>💳</span>
+                <span className={styles.offerText}>Special Price Get extra ₹3000 off (price inclusive of discount)</span>
+              </div>
+              <div className={styles.offerItem}>
+                <span className={styles.offerIcon}>🚚</span>
+                <span className={styles.offerText}>Partner Offer Sign up for Flipkart Pay Later and get Flipkart Gift Card worth ₹100*</span>
+              </div>
+            </div>
+
+            {/* Stock Status */}
             <div className={styles.stockSection}>
               <strong>Stock Status: </strong>
               {getStockMessage()}
             </div>
 
+            {/* Quantity Section */}
             <div className={styles.quantitySection}>
               <label className={styles.quantityLabel}>Quantity:</label>
               <div className={styles.quantityControls}>
@@ -363,6 +403,7 @@ const ProductDetails = () => {
               </div>
             </div>
 
+            {/* Action Buttons */}
             <div className={styles.actionButtons}>
               <button
                 className={`${styles.btn} ${styles.btnPrimary} ${isOutOfStock ? styles.disabled : ''}`}
@@ -394,29 +435,42 @@ const ProductDetails = () => {
                 )}
                 {isInWishlist ? 'In Wishlist' : 'Add to Wishlist'}
               </button>
-              <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => navigate("/")}>
-                Continue Shopping
-              </button>
+            </div>
+
+            {/* Delivery Information */}
+            <div className={styles.deliverySection}>
+              <h3 className={styles.deliveryTitle}>Delivery Options</h3>
+              <div className={styles.deliveryOption}>
+                <span className={styles.deliveryIcon}>📍</span>
+                <div className={styles.deliveryInfo}>
+                  <span className={styles.deliveryText}>Enter pincode for exact delivery dates/charges</span>
+                  <button className={styles.deliveryButton}>Check</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
+        {/* Reviews Section - Full Width */}
+        <div className="row my-4">
+          <div className="col-12">
+            <ProductReviews 
+              productId={id} 
+              productTitle={product.title} 
+            />
+          </div>
+        </div>
 
-
-
-{/* <PincodeDetails/> */}
-
-
+        {/* Similar Items */}
         <SimilarItems 
           categoryId={product.category_id} 
           currentProductId={id} 
         />
 
-        <ReviewsSection productId={id} productTitle={product.title} />
+</div>
+     
       </div>
     </div>
-    </div>
-
   )
 }
 

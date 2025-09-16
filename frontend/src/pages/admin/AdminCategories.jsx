@@ -78,7 +78,7 @@ const AdminCategories = () => {
     setValue("name", category.name)
     setValue("description", category.description)
     setValue("is_active", !!category.is_active)
-    setImagePreview(category.image) 
+    setImagePreview(category.image)
     setSelectedImage(null)
     setShowModal(true)
   }
@@ -170,7 +170,7 @@ const AdminCategories = () => {
                         <td>
                           {category.image_url ? (
                             <img
-                            src={`http://localhost:5000/uploads/${category.image_url}`}
+                              src={`${process.env.REACT_APP_IMAGE_URL}${category.image_url}`}
                               alt={category.name}
                               style={{ width: "50px", height: "50px", objectFit: "cover" }}
                               className="rounded"
@@ -235,24 +235,24 @@ const AdminCategories = () => {
                     />
                     <small className="form-text text-muted">Upload an image for the category (optional)</small>
                     {imagePreview && (
-  <div className="mt-3">
-    <div className="d-flex align-items-center gap-3">
-      <img
-        src={imagePreview}  // ✅ works for both full URL & base64
-        alt="Preview"
-        style={{ width: "100px", height: "100px", objectFit: "cover" }}
-        className="rounded border"
-      />
-      <button
-        type="button"
-        className="btn btn-sm btn-outline-danger"
-        onClick={removeImage}
-      >
-        <i className="bi bi-trash"></i> Remove
-      </button>
-    </div>
-  </div>
-)}
+                      <div className="mt-3">
+                        <div className="d-flex align-items-center gap-3">
+                          <img
+                            src={imagePreview}  // ✅ works for both full URL & base64
+                            alt="Preview"
+                            style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                            className="rounded border"
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={removeImage}
+                          >
+                            <i className="bi bi-trash"></i> Remove
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
                   </div>
 

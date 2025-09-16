@@ -224,7 +224,7 @@ const AdminProducts = () => {
                                 product.additional_images.slice(0, 3).map((image, index) => (
                                   <img
                                     key={index}
-                                    src={`${process.env.REACT_APP_IMAGE_URL}/${image.image_url}`}
+                                    src={`${process.env.REACT_APP_IMAGE_URL}${image.image_url}`}
                                     alt={`${product.title} ${index + 1}`}
                                     style={{ width: "40px", height: "40px", objectFit: "cover" }}
                                     className="rounded"
