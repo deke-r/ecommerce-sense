@@ -104,6 +104,15 @@ const AdminNavbar = () => {
                   Coupons
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link 
+                  className={`nav-link f_13 fw-semibold me-4 ${isActive("/admin/brands")}`} 
+                  to="/admin/brands"
+                >
+                  <i className="bi bi-award me-2"></i>
+                  Brands
+                </Link>
+              </li>
             
 
               <li className="nav-item dropdown">

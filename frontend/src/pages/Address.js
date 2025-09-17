@@ -173,6 +173,14 @@ const Address = () => {
                             </div>
                             <div className="text-muted" style={{ fontSize: '0.8rem' }}>
                               Qty: {item.quantity} × ₹{item.price}
+                              {(item.selected_size || item.selected_color) && (
+                                <>
+                                  {" · "}
+                                  {item.selected_size && `Size: ${item.selected_size}`}
+                                  {item.selected_size && item.selected_color && " · "}
+                                  {item.selected_color && `Color: ${item.selected_color}`}
+                                </>
+                              )}
                             </div>
                           </div>
                           <div className="fw-semibold">

@@ -46,12 +46,12 @@ const UserMenu = ({ isLoggedIn, user, cartCount, wishlistCount, handleLogout }) 
   return (
     <li className="nav-item dropdown">
       <a className="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-        <User size={18} className="me-1" />
-        <span className="d-lg-inline d-none">Login</span>
+        <User size={16} className="me-1" />
+        <span className="d-lg-inline d-none f_14 fw-semibold">Login</span>
       </a>
-      <ul className="dropdown-menu dropdown-menu-end">
-        <li><Link className="dropdown-item" to="/login">Login</Link></li>
-        <li><Link className="dropdown-item" to="/signup">Sign Up</Link></li>
+      <ul className="dropdown-menu dropdown-menu-end rounded-0">
+        <li><Link className="dropdown-item f_14 fw-semibold" to="/login">Login</Link></li>
+        <li><Link className="dropdown-item f_14 fw-semibold" to="/signup">Sign Up</Link></li>
       </ul>
     </li>
   )

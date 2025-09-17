@@ -32,6 +32,7 @@ import Wishlist from "./pages/Wishlist"
 import Contact from "./pages/Contact"
 import FAQ from "./pages/FAQ"
 import AdminBanners from "./pages/admin/AdminBanners"
+import AdminBrands from "./pages/admin/AdminBrands"
 
 function App() {
   const location = useLocation()
@@ -171,6 +172,14 @@ function App() {
             element={
               <AdminProtectedRoute>
                 <AdminCarousel />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/brands"
+            element={
+              <AdminProtectedRoute>
+                <AdminBrands />
               </AdminProtectedRoute>
             }
           />

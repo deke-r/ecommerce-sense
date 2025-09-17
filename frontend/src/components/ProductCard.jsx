@@ -123,13 +123,18 @@ const ProductCard = ({image, title, price, oldPrice, discount, rating, reviews, 
         <div className={styles.priceSection}>
           <div className={styles.currentPrice}>₹{price}</div>
           {oldPrice && <div className={styles.oldPrice}>₹{oldPrice}</div>}
+          {getStockMessage() && (
+          <span className={styles.stockMessage}>
+          {getStockMessage()}
+          </span>
+           )}
         </div>
 
-        {getStockMessage() && (
+        {/* {getStockMessage() && (
           <div className={styles.stockMessage}>
             {getStockMessage()}
           </div>
-        )}
+        )} */}
 
         <div className={styles.buttonRow}>
           <button 

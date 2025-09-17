@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { reviewsAPI } from '../services/api'
+import ReviewForm from '../components/ReviewForm'
 import styles from '../style/AllReviews.module.css'
 
 const AllReviews = () => {
@@ -9,26 +10,49 @@ const AllReviews = () => {
   const [reviews, setReviews] = useState([])
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [rating, setRating] = useState({ average: 0, total: 0, distribution: {} })
+  const [rating, setRating] = useState({ average: 0, total: 0, breakdown: {} })
   const [pagination, setPagination] = useState({})
   const [currentPage, setCurrentPage] = useState(1)
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [userHasReviewed, setUserHasReviewed] = useState(false)
 
   useEffect(() => {
     fetchReviews()
+    checkUserReview()
   }, [productId, currentPage])
 
   const fetchReviews = async () => {
     setLoading(true)
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/reviews/${productId}/all?page=${currentPage}`)
+      const response = await reviewsAPI.getAllByProduct(productId, currentPage, 10)
       setReviews(response.data.reviews || [])
       setProduct(response.data.product)
-      setRating(response.data.rating || { average: 0, total: 0, distribution: {} })
+      setRating({
+        average: response.data.rating?.average || 0,
+        total: response.data.rating?.total || 0,
+        breakdown: response.data.rating?.distribution || {}
+      })
       setPagination(response.data.pagination || {})
     } catch (error) {
       console.error("Error fetching reviews:", error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const checkUserReview = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) return
+      
+      // Check if user has already reviewed this product
+      const response = await reviewsAPI.getAllByProduct(productId, 1, 100)
+      const userReviews = response.data.reviews.filter(review => 
+        review.user_id === JSON.parse(localStorage.getItem('user'))?.id
+      )
+      setUserHasReviewed(userReviews.length > 0)
+    } catch (error) {
+      console.error("Error checking user review:", error)
     }
   }
 
@@ -54,6 +78,25 @@ const AllReviews = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleWriteReview = () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      navigate('/login')
+      return
+    }
+    setShowReviewForm(true)
+  }
+
+  const handleReviewSubmitted = () => {
+    setShowReviewForm(false)
+    setUserHasReviewed(true)
+    fetchReviews() // Refresh reviews
+  }
+
+  const handleCancelReview = () => {
+    setShowReviewForm(false)
   }
 
   const renderPagination = () => {
@@ -102,17 +145,17 @@ const AllReviews = () => {
   }
 
   const renderRatingDistribution = () => {
-    if (!rating.distribution) return null
+    if (!rating || rating.total === 0) return null
 
-    const total = rating.total
-    if (total === 0) return null
+    const keyMap = { 5: 'five', 4: 'four', 3: 'three', 2: 'two', 1: 'one' }
+    const getCount = (star) => rating.breakdown?.[keyMap[star]] || 0
 
     return (
       <div className={styles.ratingDistribution}>
         <h4>Rating Distribution</h4>
         {[5, 4, 3, 2, 1].map(star => {
-          const count = rating.distribution[`${star}_star`] || 0
-          const percentage = total > 0 ? (count / total) * 100 : 0
+          const count = getCount(star)
+          const percentage = rating.total > 0 ? Math.round((count / rating.total) * 100) : 0
           
           return (
             <div key={star} className={styles.ratingBar}>
@@ -197,33 +240,33 @@ const AllReviews = () => {
               <h3>Rating Breakdown</h3>
               {renderRatingDistribution()}
             </div>
-            
-            <div className={styles.filtersCard}>
-              <h3>Filter Reviews</h3>
-              <div className={styles.filterOptions}>
-                <button className={styles.filterBtn}>All Reviews</button>
-                <button className={styles.filterBtn}>5 Star</button>
-                <button className={styles.filterBtn}>4 Star</button>
-                <button className={styles.filterBtn}>3 Star</button>
-                <button className={styles.filterBtn}>2 Star</button>
-                <button className={styles.filterBtn}>1 Star</button>
-              </div>
-            </div>
           </div>
 
           {/* Reviews List */}
           <div className={styles.reviewsContainer}>
             <div className={styles.reviewsHeader}>
               <h2>Customer Reviews</h2>
-              <div className={styles.sortOptions}>
-                <select className={styles.sortSelect}>
-                  <option>Most Recent</option>
-                  <option>Most Helpful</option>
-                  <option>Highest Rating</option>
-                  <option>Lowest Rating</option>
-                </select>
+              <div className={styles.reviewsControls}>
+                {!userHasReviewed && (
+                  <button 
+                    className={styles.writeReviewBtn}
+                    onClick={handleWriteReview}
+                  >
+                    Write a Review
+                  </button>
+                )}
               </div>
             </div>
+
+            {/* Review Form */}
+            {showReviewForm && (
+              <ReviewForm
+                productId={productId}
+                productTitle={product.title}
+                onReviewSubmitted={handleReviewSubmitted}
+                onCancel={handleCancelReview}
+              />
+            )}
             
             {reviews.length > 0 ? (
               <>
@@ -285,7 +328,7 @@ const AllReviews = () => {
                 <p>Be the first to review this product!</p>
                 <button 
                   className={styles.writeFirstReviewBtn}
-                  onClick={() => navigate(`/product/${productId}`)}
+                  onClick={handleWriteReview}
                 >
                   Write a Review
                 </button>

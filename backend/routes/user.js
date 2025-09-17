@@ -138,7 +138,7 @@ router.get("/productsbycategory/:categoryId", async (req, res) => {
     `;
 
     let [products] = await con.execute(query, [categoryId]);
-
+// console.log(products.title)
     // Convert extra_images string into an array
     products = products.map(p => ({
       ...p,

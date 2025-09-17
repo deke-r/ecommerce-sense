@@ -117,4 +117,15 @@ export const adminBannersAPI = {
   delete: (id) => adminAPI.delete(`/admin/banners/${id}`),
 }
 
+// Add brands endpoints
+export const adminBrandsAPI = {
+  getAll: () => adminAPI.get('/brands'),
+  getActive: () => adminAPI.get('/brands/active'),
+  getById: (id) => adminAPI.get(`/brands/${id}`),
+  create: (data) => adminAPI.post('/brands', data),
+  update: (id, data) => adminAPI.put(`/brands/${id}`, data),
+  delete: (id) => adminAPI.delete(`/brands/${id}`),
+  toggleStatus: (id) => adminAPI.patch(`/brands/${id}/toggle`)
+}
+
 export default adminAPI

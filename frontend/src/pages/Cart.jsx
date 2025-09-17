@@ -174,6 +174,13 @@ const Cart = () => {
                       <div className="mt-1">
                         {getStockStatus(item)}
                       </div>
+                      {(item.selected_size || item.selected_color) && (
+                        <div className="text-muted small mt-1">
+                          {item.selected_size && <span>Size: {item.selected_size}</span>}
+                          {item.selected_size && item.selected_color && <span> · </span>}
+                          {item.selected_color && <span>Color: {item.selected_color}</span>}
+                        </div>
+                      )}
                     </div>
                     <div className="col-md-3">
                       <div className="input-group">

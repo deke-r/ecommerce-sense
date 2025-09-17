@@ -97,8 +97,9 @@
   margin-bottom: 20px;
   background: white;
   min-height: 500px;
-  overflow: hidden;
+  overflow: visible; /* was hidden; sticky needs visible */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  align-items: start; /* don't stretch left to right's height */
 }
 
 /* Reviews Section - Full Width */
@@ -108,11 +109,15 @@
 }
 
 /* Image Container - Clean Flipkart style */
+/* Image Container - Clean Flipkart style */
 .imageContainer {
-  position: relative;
+  position: static;       /* was sticky; sticky now handled by leftSection */
+  align-self: start;
+  height: fit-content;
   padding: 20px;
   background: #fafafa;
   border-right: 1px solid #e0e0e0;
+  z-index: 2;
 }
 
 .productImage {
@@ -355,6 +360,18 @@
   min-width: 40px;
   border-right: 1px solid #e0e0e0;
 }
+.quantityBtn2 {
+  background: #fff;
+  border: none;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #212121;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  border-left: 1px solid #e0e0e0;
+}
 
 .quantityBtn:hover {
   background: #f5f5f5;
@@ -362,6 +379,16 @@
 }
 
 .quantityBtn:disabled {
+  background: #f5f5f5;
+  color: #c0c0c0;
+  cursor: not-allowed;
+}
+.quantityBtn2:hover {
+  background: #f5f5f5;
+  color: #2874f0;
+}
+
+.quantityBtn2:disabled {
   background: #f5f5f5;
   color: #c0c0c0;
   cursor: not-allowed;
@@ -756,8 +783,9 @@
     border-right: none;
     border-bottom: 1px solid #e0e0e0;
     padding: 16px;
+    position: static; /* disable sticky on mobile */
+    top: auto;
   }
-
   .productInfo {
     padding: 16px;
   }
@@ -878,4 +906,154 @@
 .btnOutline:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Brand Section */
+.brandSection {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.brandLabel {
+  font-weight: 600;
+  color: #666;
+}
+
+.brandName {
+  font-weight: 700;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+/* Size Selection */
+.sizeSection {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.sizeLabel {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+.sizeOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sizeButton {
+  padding: 0.5rem 1rem;
+  border: 2px solid #ddd;
+  background-color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+  min-width: 50px;
+  text-align: center;
+}
+
+.sizeButton:hover:not(:disabled) {
+  border-color: #007bff;
+  background-color: #f8f9fa;
+}
+
+.sizeSelected {
+  border-color: #007bff !important;
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.sizeOutOfStock {
+  background-color: #f5f5f5 !important;
+  color: #999 !important;
+  cursor: not-allowed !important;
+  border-color: #ddd !important;
+}
+
+.outOfStockText {
+  display: block;
+  font-size: 0.7rem;
+  color: #dc3545;
+  margin-top: 2px;
+}
+
+.sizeInfo {
+  margin-top: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sizeOptions {
+    justify-content: flex-start;
+  }
+  
+  .sizeButton {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .brandSection {
+    margin-bottom: 0.75rem;
+  }
+  
+  .brandName {
+    font-size: 1rem;
+  }
+}
+
+
+/* New Flex Layout for Product Page */
+.productContainer {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.leftSection {
+  position: sticky;
+  top: 80px; /* keep image fixed under header */
+  flex: 0 0 38%;
+  max-width: 38%;
+  background: #fafafa;
+  border-right: 1px solid #e0e0e0;
+}
+
+.rightSection {
+  flex: 1;
+  overflow: auto;
+  max-height: calc(100vh - 100px);
+  padding: 24px;
+  background: #fff;
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 768px) {
+  .productContainer {
+    flex-direction: column;
+  }
+  .leftSection {
+    position: static;
+    top: auto;
+    flex: 0 0 auto;
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .rightSection {
+    overflow: visible;
+    max-height: none;
+    padding: 16px;
+  }
 }

@@ -11,7 +11,7 @@ const ProductsByCategory = () => {
   const [products, setProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
   const [loading, setLoading] = useState(true)
-  const [priceRange, setPriceRange] = useState([0, 10000])
+  const [priceRange, setPriceRange] = useState([0, 100000])
   const [sortBy, setSortBy] = useState("default")
   const [minRating, setMinRating] = useState(0)
 
@@ -101,7 +101,9 @@ const ProductsByCategory = () => {
                     className={styles.priceInput}
                     placeholder="Min"
                     value={priceRange[0]}
-                    onChange={(e) => setPriceRange([Number.parseInt(e.target.value) || 0, priceRange[1]])}
+                    onChange={(e) =>
+                      setPriceRange([Number.parseInt(e.target.value) || 0, priceRange[1]])
+                    }
                   />
                   <span className={styles.priceSeparator}>-</span>
                   <input
@@ -109,18 +111,27 @@ const ProductsByCategory = () => {
                     className={styles.priceInput}
                     placeholder="Max"
                     value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], Number.parseInt(e.target.value) || 10000])}
+                    onChange={(e) =>
+                      setPriceRange([
+                        priceRange[0],
+                        Number.parseInt(e.target.value) || 1000000, // increase upper bound
+                      ])
+                    }
                   />
+
                 </div>
                 <input
                   type="range"
                   className={styles.priceRange}
                   min="0"
-                  max="10000"
+                  max="1000000"   // increase max value here
                   step="100"
                   value={priceRange[1]}
-                  onChange={(e) => setPriceRange([priceRange[0], Number.parseInt(e.target.value)])}
+                  onChange={(e) =>
+                    setPriceRange([priceRange[0], Number.parseInt(e.target.value)])
+                  }
                 />
+
                 <div className={styles.priceDisplay}>
                   ₹{priceRange[0]} - ₹{priceRange[1]}
                 </div>
@@ -171,19 +182,19 @@ const ProductsByCategory = () => {
 
           {/* Main Content Area */}
           <div className={styles.mainContent}>
-          <nav aria-label="breadcrumb" className={styles.breadcrumbNav}>
-                <ol className={styles.breadcrumb}>
-                  <li className={styles.breadcrumbItem}>
-                    <button className={styles.breadcrumbLink} onClick={() => handleBreadcrumbClick("/")}>
-                      Home
-                    </button>
-                  </li>
-                  <li className={`${styles.breadcrumbItem} ${styles.active}`}>{name || "Category"}</li>
-                </ol>
-              </nav>
+            <nav aria-label="breadcrumb" className={styles.breadcrumbNav}>
+              <ol className={styles.breadcrumb}>
+                <li className={styles.breadcrumbItem}>
+                  <button className={styles.breadcrumbLink} onClick={() => handleBreadcrumbClick("/")}>
+                    Home
+                  </button>
+                </li>
+                <li className={`${styles.breadcrumbItem} ${styles.active}`}>{name || "Category"}</li>
+              </ol>
+            </nav>
             {/* Results Header */}
             <div className={styles.resultsHeader}>
-           
+
               <div className={styles.resultsInfo}>
                 <h2 className={styles.categoryTitle}>{name || "Products"}</h2>
                 <span className={styles.productCount}>({filteredProducts.length} items)</span>

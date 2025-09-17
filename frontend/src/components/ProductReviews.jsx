@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { reviewsAPI } from '../services/api'
+import ReviewForm from './ReviewForm'
 import styles from '../style/ProductReviews.module.css'
 
 const ProductReviews = ({ productId, productTitle }) => {
@@ -9,24 +10,29 @@ const ProductReviews = ({ productId, productTitle }) => {
   const [reviewsLoading, setReviewsLoading] = useState(false)
   const [rating, setRating] = useState({ average: 0, total: 0, breakdown: {} })
   const [showAllReviews, setShowAllReviews] = useState(false)
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [userHasReviewed, setUserHasReviewed] = useState(false)
 
   useEffect(() => {
     fetchReviews()
+    checkUserReview()
   }, [productId])
-
   const fetchReviews = async () => {
     setReviewsLoading(true)
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/reviews/${productId}/all?limit=3`)
-      setReviews(response.data.reviews || [])
+      const [limitedRes, distRes] = await Promise.all([
+        reviewsAPI.getByProduct(productId, 1, 3),
+        reviewsAPI.getAllByProduct(productId, 1, 1),
+      ])
+      setReviews(limitedRes.data.reviews || [])
+      const dist = distRes.data?.rating || {}
       setRating({
-        average: response.data.rating?.average || 0,
-        total: response.data.rating?.total || 0,
-        breakdown: response.data.rating?.distribution || {}
+        average: dist.average || 0,
+        total: dist.total || 0,
+        breakdown: dist.distribution || {}
       })
     } catch (error) {
       console.error("Error fetching reviews:", error)
-      // Set default values on error
       setReviews([])
       setRating({ average: 0, total: 0, breakdown: {} })
     } finally {
@@ -34,12 +40,29 @@ const ProductReviews = ({ productId, productTitle }) => {
     }
   }
 
-  const renderStars = (rating, size = 'small') => {
+  const checkUserReview = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) return
+      
+      // Check if user has already reviewed this product
+      const response = await reviewsAPI.getByProduct(productId, 1, 100)
+      const userReviews = response.data.reviews.filter(review => 
+        review.user_id === JSON.parse(localStorage.getItem('user'))?.id
+      )
+      setUserHasReviewed(userReviews.length > 0)
+    } catch (error) {
+      console.error("Error checking user review:", error)
+    }
+  }
+
+  const renderStars = (value, size = 'small') => {
     const starSize = size === 'large' ? '1.2rem' : '0.9rem'
+    const filled = Math.max(0, Math.min(5, Math.floor(Number(value) || 0)))
     return Array.from({ length: 5 }, (_, index) => (
       <span
         key={index}
-        className={`${styles.star} ${index < rating ? styles.starFilled : styles.starEmpty}`}
+        className={`${styles.star} ${index < filled ? styles.starFilled : styles.starEmpty}`}
         style={{ fontSize: starSize }}
       >
         ★
@@ -54,6 +77,22 @@ const ProductReviews = ({ productId, productTitle }) => {
       day: "numeric",
     })
   }
+
+  // Build dynamic breakdown list from API keys (supports 'five'..'one' or numeric keys)
+  const getBreakdownEntries = () => {
+    if (!rating.total || !rating.breakdown) return []
+    const keyToStar = (key) => {
+      const map = { five: 5, four: 4, three: 3, two: 2, one: 1 }
+      if (key in map) return map[key]
+      const n = parseInt(key, 10)
+      return Number.isFinite(n) ? n : null
+    }
+    return Object.entries(rating.breakdown)
+      .map(([k, count]) => ({ star: keyToStar(k), count: Number(count) || 0 }))
+      .filter(e => e.star !== null)
+      .sort((a, b) => b.star - a.star)
+  }
+
 
   const getRatingPercentage = (star) => {
     if (rating.total === 0 || !rating.breakdown) return 0
@@ -76,7 +115,22 @@ const ProductReviews = ({ productId, productTitle }) => {
   }
 
   const handleWriteReview = () => {
-    navigate(`/product/${productId}/reviews`)
+    const token = localStorage.getItem('token')
+    if (!token) {
+      navigate('/login')
+      return
+    }
+    setShowReviewForm(true)
+  }
+
+  const handleReviewSubmitted = () => {
+    setShowReviewForm(false)
+    setUserHasReviewed(true)
+    fetchReviews() // Refresh reviews
+  }
+
+  const handleCancelReview = () => {
+    setShowReviewForm(false)
   }
 
   return (
@@ -85,12 +139,14 @@ const ProductReviews = ({ productId, productTitle }) => {
       <div className={styles.ratingSummary}>
         <div className={styles.ratingHeader}>
           <h3 className={styles.ratingTitle}>Customer Reviews</h3>
-          <button 
-            className={styles.writeReviewBtn}
-            onClick={handleWriteReview}
-          >
-            Write a Review
-          </button>
+          {!userHasReviewed && (
+            <button 
+              className={styles.writeReviewBtn}
+              onClick={handleWriteReview}
+            >
+              Write a Review
+            </button>
+          )}
         </div>
 
         {reviewsLoading ? (
@@ -98,19 +154,19 @@ const ProductReviews = ({ productId, productTitle }) => {
         ) : rating.total > 0 ? (
           <div className="row">
             <div className="col-lg-4 col-md-6 mb-3">
-              <div className={styles.averageRating}>
-                <span className={styles.ratingNumber}>{rating.average}</span>
-                <div className={styles.ratingStars}>
-                  {renderStars(Math.round(parseFloat(rating.average)), 'large')}
+            <div className={styles.averageRating}>
+                  <span className={styles.ratingNumber}>{rating.average}</span>
+                  <div className={styles.ratingStars}>
+                    {renderStars(rating.average, 'large')}
+                  </div>
+                  <span className={styles.ratingCount}>{rating.total} reviews</span>
                 </div>
-                <span className={styles.ratingCount}>{rating.total} reviews</span>
-              </div>
             </div>
 
             <div className="col-lg-8 col-md-6">
               <div className={styles.ratingBreakdown}>
-                {[5, 4, 3, 2, 1].map((star) => {
-                  const percentage = getRatingPercentage(star)
+                {getBreakdownEntries().map(({ star, count }) => {
+                  const percentage = Math.round((count / rating.total) * 100)
                   return (
                     <div key={star} className={styles.ratingBar}>
                       <span className={styles.starLabel}>{star}★</span>
@@ -139,6 +195,16 @@ const ProductReviews = ({ productId, productTitle }) => {
           </div>
         )}
       </div>
+
+      {/* Review Form */}
+      {showReviewForm && (
+        <ReviewForm
+          productId={productId}
+          productTitle={productTitle}
+          onReviewSubmitted={handleReviewSubmitted}
+          onCancel={handleCancelReview}
+        />
+      )}
 
       {/* Recent Reviews */}
       {reviews.length > 0 && (

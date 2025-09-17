@@ -54,7 +54,7 @@ const FeaturedProducts = ({ onProductClick }) => {
   }
 
   return (
-    <section className='container-fluid ' >
+    <section className='container-fluid my-3' >
       <div className="row mx-md-1 shadow-sm" style={{backgroundColor:'white'}}>
 
           <h3 className=''>Featured Products</h3>

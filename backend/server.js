@@ -22,6 +22,7 @@ const contactRoutes = require('./routes/contact')
 const faqRoutes = require('./routes/faq')
 const analyticsRoutes = require('./routes/analytics')
 const couponRoutes = require('./routes/coupons')
+const brandsRoutes = require("./routes/brands")
 
 // Add these route uses
 app.use('/api/wishlist', wishlistRoutes)
@@ -31,6 +32,7 @@ app.use('/api/contact', contactRoutes)
 app.use('/api/faq', faqRoutes)
 app.use('/api/analytics', analyticsRoutes)
 app.use('/api/coupons', couponRoutes)
+app.use('/api/brands', brandsRoutes)
 
 // Routes
 app.use("/api/auth", require("./routes/auth"))
