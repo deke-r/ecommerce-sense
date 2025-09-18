@@ -11,6 +11,7 @@ import { FaHeart, FaRegHeart } from "react-icons/fa"
 import { wishlistAPI } from "../services/api"
 import { recentlyViewedAPI } from "../services/api"
 import PincodeDetails from "../components/PincodeChecker"
+import SameBrandProducts from "../components/SameBrandProducts"
 
 const ProductDetails = () => {
   const { id } = useParams()
@@ -596,6 +597,15 @@ const ProductDetails = () => {
           categoryId={product.category_id} 
           currentProductId={id} 
         />
+
+        {/* Same Brand Products */}
+        {product.brand && product.brand.id && (
+          <SameBrandProducts 
+            brandId={product.brand.id} 
+            currentProductId={id}
+            brandName={product.brand.name}
+          />
+        )}
 
 </div>
      

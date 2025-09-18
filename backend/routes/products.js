@@ -599,4 +599,94 @@ router.get("/search", async (req, res) => {
   }
 });
 
+// Get products by brand
+router.get("/brand/:brandId", async (req, res) => {
+  try {
+    const { brandId } = req.params;
+    const con = getConnection();
+    
+    const [products] = await con.execute(`
+      SELECT 
+        p.*, 
+        GROUP_CONCAT(DISTINCT pi.image_url ORDER BY pi.id ASC) AS additional_image_urls,
+        GROUP_CONCAT(DISTINCT pi.id ORDER BY pi.id ASC) AS additional_image_ids,
+        GROUP_CONCAT(DISTINCT pr.id) AS review_ids,
+        GROUP_CONCAT(DISTINCT pr.user_id) AS review_user_ids,
+        GROUP_CONCAT(DISTINCT pr.star) AS review_stars, 
+        GROUP_CONCAT(DISTINCT pr.comment) AS review_comments,
+        GROUP_CONCAT(DISTINCT pr.created_at) AS review_dates
+      FROM products p
+      LEFT JOIN product_images pi ON p.id = pi.product_id
+      LEFT JOIN reviews pr ON p.id = pr.product_id
+      WHERE p.brand_id = ?
+      GROUP BY p.id
+      ORDER BY p.created_at DESC;
+    `, [brandId]);
+
+    const processedProducts = products.map((product) => {
+      const productData = { ...product };
+
+      // Add brand info
+      productData.brand = {
+        name: product.brand_name || 'Generic',
+        image: null,
+      };
+
+      // Process additional images
+      if (product.additional_image_urls) {
+        const imageUrls = product.additional_image_urls.split(',');
+        const imageIds = product.additional_image_ids.split(',');
+        productData.additional_images = imageUrls.map((url, index) => ({
+          id: imageIds[index],
+          image_url: url
+        }));
+      } else {
+        productData.additional_images = [];
+      }
+
+      // Process reviews
+      if (product.review_ids) {
+        const reviewIds = product.review_ids.split(',');
+        const userIds = product.review_user_ids.split(',');
+        const stars = product.review_stars.split(',');
+        const comments = product.review_comments.split(',');
+        const dates = product.review_dates.split(',');
+        
+        productData.reviews = reviewIds.map((id, index) => ({
+          id: id,
+          user_id: userIds[index],
+          star: stars[index],
+          comment: comments[index],
+          created_at: dates[index]
+        }));
+        
+        // Calculate average rating
+        const ratings = stars.map(Number).filter(r => !isNaN(r));
+        productData.average_rating = ratings.length > 0 
+          ? (ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length).toFixed(1)
+          : 0;
+      } else {
+        productData.reviews = [];
+        productData.average_rating = 0;
+      }
+
+      // Clean up the product data
+      delete productData.additional_image_urls;
+      delete productData.additional_image_ids;
+      delete productData.review_ids;
+      delete productData.review_user_ids;
+      delete productData.review_stars;
+      delete productData.review_comments;
+      delete productData.review_dates;
+
+      return productData;
+    });
+
+    res.json({ products: processedProducts });
+  } catch (error) {
+    console.error("Get products by brand error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router

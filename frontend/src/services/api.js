@@ -42,20 +42,24 @@ export const productsAPI = {
   getAll: () => api.get("/products"),
   getById: (id) => api.get(`/products/${id}`),
   getByCategory: (categoryId) => api.get(`/products/category/${categoryId}`),
+  getByBrand: (brandId) => api.get(`/products/brand/${brandId}`),
   search: (query) => api.get(`/products/search?q=${query}`),
 }
 
 // Cart API
 export const cartAPI = {
   getAll: () => api.get("/cart"),
-  addItem: (productId, quantity, selectedSize = null) => {
+  // aliases used by pages
+  getItems: () => api.get("/cart"),
+  addItem: (productId, quantity, selectedSize = null, selectedColor = null) => {
     const data = { quantity }
-    if (selectedSize) {
-      data.selected_size = selectedSize
-    }
+    if (selectedSize) data.selected_size = selectedSize
+    if (selectedColor) data.selected_color = selectedColor
     return api.post(`/cart/add/${productId}`, data)
   },
   updateQuantity: (itemId, quantity) => api.put(`/cart/${itemId}`, { quantity }),
+  // alias
+  updateItem: (itemId, quantity) => api.put(`/cart/${itemId}`, { quantity }),
   removeItem: (itemId) => api.delete(`/cart/${itemId}`),
   clearCart: () => api.delete("/cart"),
 }
@@ -158,6 +162,13 @@ export const reviewsAPI = {
   // Get all reviews for a product (for dedicated reviews page)
   getAllByProduct: (productId, page = 1, limit = 10) => 
     api.get(`/user/reviews/${productId}/all?page=${page}&limit=${limit}`),
+}
+
+// Brands API
+export const brandsAPI = {
+  getAll: () => api.get("/brands"),
+  getActive: () => api.get("/brands/active"),
+  getById: (id) => api.get(`/brands/${id}`),
 }
 
 export default api
