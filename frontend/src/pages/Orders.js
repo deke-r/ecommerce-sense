@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ordersAPI } from "../services/api"
+import styles from "../style/ProductDetails.module.css"
 
 const Orders = () => {
   const [orders, setOrders] = useState([])
@@ -65,25 +66,34 @@ const Orders = () => {
   }
 
   return (
-    <div className="container mt-4">
-      <div className="row">
-        <div className="col-12">
-          <h2 className="mb-4">
-            <i className="bi bi-box-seam me-2"></i>
-            My Orders
-          </h2>
-        </div>
+    <div className="container-fluid mt-4">
+         <div className="row mx-md-2">
+        <nav aria-label="breadcrumb" className={styles.breadcrumbNav}>
+          <ol className={styles.breadcrumb + " d-flex align-items-center"} style={{ marginBottom: 0 }}>
+            <li className={styles.breadcrumbItem}>
+              <button className={styles.breadcrumbLink} onClick={() => navigate("/")}>
+                Home
+              </button>
+            </li>
+            <li className={`${styles.breadcrumbItem} ${styles.active}`}>
+             Orders
+            </li>
+
+         
+
+          </ol>
+        </nav>
       </div>
 
       {orders.length === 0 ? (
-        <div className="row">
+        <div className="row mx-md-2">
           <div className="col-12">
-            <div className="card">
+            <div className="card rounded-0">
               <div className="card-body text-center py-5">
                 <i className="bi bi-cart-x display-1 text-muted"></i>
-                <h3 className="mt-3">No orders yet</h3>
-                <p className="text-muted">You haven't placed any orders yet.</p>
-                <a href="/" className="btn btn-primary">
+                <h3 className="mt-3 f_16 fw-semibold">No orders yet</h3>
+                <p className="text-muted f_13 fw-semibold">You haven't placed any orders yet.</p>
+                <a href="/" className="btn btn-primary rounded-1 f_14 fw-semibold">
                   <i className="bi bi-arrow-left me-2"></i>
                   Start Shopping
                 </a>
@@ -95,7 +105,7 @@ const Orders = () => {
         <div className="row">
           {orders.map((order) => (
             <div key={order.id} className="col-12 mb-4">
-              <div className="card">
+              <div className="card rounded-0">
                 <div className="card-header">
                   <div className="row align-items-center">
                     <div className="col-md-3">

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import axios from "axios"
 import styles from "../style/Addresses.module.css"
+import { useNavigate } from "react-router-dom"
 
 const Addresses = ({ onAddressSelect, selectedAddress }) => {
   const [addresses, setAddresses] = useState([])
@@ -11,7 +12,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
   const [editingAddress, setEditingAddress] = useState(null)
   const [loading, setLoading] = useState(true)
   const [alert, setAlert] = useState({ show: false, type: "", message: "" })
-
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -162,7 +163,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
   }
 
   return (
-    <div className={`container mt-2`}>
+    <div className={`container-fluid mt-4`}>
       {alert.show && (
         <div
           className={`alert alert-${alert.type === "error" ? "danger" : "success"} alert-dismissible fade show ${styles.alertCustom}`}

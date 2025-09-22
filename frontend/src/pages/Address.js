@@ -120,7 +120,7 @@ const Address = () => {
   }
 
   return (
-    <div className="container mt-4">
+    <div className="container-fluid">
       <div className="row">
         <div className="col-lg-8">
           <Addresses 
@@ -138,7 +138,7 @@ const Address = () => {
         </div>
 
         <div className="col-lg-4">
-          <div className="card rounded-0 shadow-sm">
+          <div className="card rounded-0 shadow-sm mt-4">
             <div className="card-header">
               <h5 className="mb-0 f_16 fw-semibold">Order Summary</h5>
             </div>
