@@ -4,6 +4,8 @@ import { wishlistAPI } from '../services/api';
 import ProductCard from '../components/ProductCard';
 import styles from '../style/Wishlist.module.css';
 
+
+
 const Wishlist = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,27 +53,31 @@ const Wishlist = () => {
 
   return (
     <div className="container-fluid my-3">
-      <div className="row mx-md-1">
+
+
+      <div className="row mx-md-2">
         <nav aria-label="breadcrumb" className={styles.breadcrumbNav}>
-          <ol className={styles.breadcrumb}>
+          <ol className={styles.breadcrumb + " d-flex align-items-center"} style={{ marginBottom: 0 }}>
             <li className={styles.breadcrumbItem}>
               <button className={styles.breadcrumbLink} onClick={() => navigate("/")}>
                 Home
               </button>
             </li>
-            <li className={`${styles.breadcrumbItem} ${styles.active}`}>Wishlist</li>
+            <li className={`${styles.breadcrumbItem} ${styles.active}`}>
+              Wishlist
+              <span className="ms-2">({wishlistItems.length} items)</span>
+            </li>
+
           </ol>
         </nav>
+      </div>
+
+
+      <div className="row mx-md-1">
+       
 
         <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <h2 className={styles.pageTitle}>My Wishlist</h2>
-              <p className={styles.pageSubtitle}>
-                {wishlistItems.length} {wishlistItems.length === 1 ? 'item' : 'items'} in your wishlist
-              </p>
-            </div>
-          </div>
+        
 
           {wishlistItems.length > 0 ? (
             <div className="row">
@@ -106,7 +112,7 @@ const Wishlist = () => {
                 <i className="fas fa-heart"></i>
                 <h4>Your wishlist is empty</h4>
                 <p>Save items you love for later by clicking the heart icon</p>
-                <button 
+                <button
                   className="btn btn-primary"
                   onClick={() => navigate('/products')}
                 >

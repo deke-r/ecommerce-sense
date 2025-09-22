@@ -122,33 +122,33 @@ const Cart = () => {
 
   return (
     <div className="container-fluid mt-4">
-      
-      <div className="row mx-md-2">
-  <nav aria-label="breadcrumb" className={styles.breadcrumbNav}>
-    <ol className={styles.breadcrumb + " d-flex align-items-center"} style={{ marginBottom: 0 }}>
-      <li className={styles.breadcrumbItem}>
-        <button className={styles.breadcrumbLink} onClick={() => navigate("/")}>
-          Home
-        </button>
-      </li>
-      <li className={`${styles.breadcrumbItem} ${styles.active}`}>
-        <i className="bi bi-cart3 mx-2"></i> ({cartItems.length} items)
-      </li>
 
-      {cartItems.length > 0 && (
-        <li className="ms-auto">
-          <button
-            className="btn rounded-1 btn-outline-danger f_14 fw-semibold"
-            onClick={clearCart}
-          >
-            <i className="bi bi-trash me-1"></i>
-            Clear Cart
-          </button>
-        </li>
-      )}
-    </ol>
-  </nav>
-</div>
+      <div className="row mx-md-2">
+        <nav aria-label="breadcrumb" className={styles.breadcrumbNav}>
+          <ol className={styles.breadcrumb + " d-flex align-items-center"} style={{ marginBottom: 0 }}>
+            <li className={styles.breadcrumbItem}>
+              <button className={styles.breadcrumbLink} onClick={() => navigate("/")}>
+                Home
+              </button>
+            </li>
+            <li className={`${styles.breadcrumbItem} ${styles.active}`}>
+              <i className="bi bi-cart3 mx-2"></i> ({cartItems.length} items)
+            </li>
+
+            {cartItems.length > 0 && (
+              <li className="ms-auto">
+                <button
+                  className="btn rounded-1 btn-outline-danger f_14 fw-semibold"
+                  onClick={clearCart}
+                >
+                  <i className="bi bi-trash me-1"></i>
+                  Clear Cart
+                </button>
+              </li>
+            )}
+          </ol>
+        </nav>
+      </div>
 
 
 
@@ -266,8 +266,8 @@ const Cart = () => {
                   <strong className="f_14 fw-semibold">₹{calculateTotal()}</strong>
                 </div>
                 <div className="d-grid gap-2">
-                  <button 
-                    className="btn rounded-1 btn-primary btn-lg f_14 fw-semibold" 
+                  <button
+                    className="btn rounded-1 btn-primary btn-lg f_14 fw-semibold"
                     onClick={handleCheckout}
                     disabled={cartItems.some(item => isItemOutOfStock(item))}
                   >

@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { userAPI } from "../services/api"
+import styles from "../style/ProductDetails.module.css"
+import { useNavigate } from "react-router-dom"
 
 const Profile = () => {
+  const navigate = useNavigate()
   const [user, setUser] = useState({})
   const [formData, setFormData] = useState({
     name: "",
@@ -112,16 +115,30 @@ const Profile = () => {
   }
 
   return (
-    <div className="container mt-4">
-      <div className="row justify-content-center">
-        <div className="col-lg-8">
-          <div className="card rounded-4">
-            <div className="card-header">
-              <h4 className="mb-0">
-                <i className="bi bi-person-circle me-2 text-blue"></i>
-                My Profile
-              </h4>
-            </div>
+    <div className="container-fluid mt-4">
+
+
+<div className="row mx-md-2">
+        <nav aria-label="breadcrumb" className={styles.breadcrumbNav}>
+          <ol className={styles.breadcrumb + " d-flex align-items-center"} style={{ marginBottom: 0 }}>
+            <li className={styles.breadcrumbItem}>
+              <button className={styles.breadcrumbLink} onClick={() => navigate("/")}>
+                Home
+              </button>
+            </li>
+            <li className={`${styles.breadcrumbItem} ${styles.active}`}>
+              Profile
+            </li>
+
+          </ol>
+        </nav>
+      </div>
+
+
+      <div className="row mx-md-2 justify-content-center">
+        <div className="col-lg-12">
+          <div className="card rounded-0">
+           
             <div className="card-body">
               <form onSubmit={handleSubmit}>
                 <div className="row">
@@ -131,7 +148,7 @@ const Profile = () => {
                     </label>
                     <input
                       type="text"
-                      className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted"
+                      className="form-control rounded-1 shadow-none py-2 f_14 fw-semibold text-muted"
                       id="name"
                       name="name"
                       value={formData.name}
@@ -143,7 +160,7 @@ const Profile = () => {
                     <label htmlFor="email" className="form-label  ms-2 f_14 fw-semibold ">
                       Email
                     </label>
-                    <input type="email" className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted" id="email" value={user.email} disabled />
+                    <input type="email" className="form-control rounded-1 shadow-none py-2 f_14 fw-semibold text-muted" id="email" value={user.email} disabled />
                     <small className="text-muted f_13 fw-semibold ms-2">Email cannot be changed</small>
                   </div>
                 </div>
@@ -154,7 +171,7 @@ const Profile = () => {
                   </label>
                   <input
                     type="tel"
-                    className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted"
+                    className="form-control rounded-1 shadow-none py-2 f_14 fw-semibold text-muted"
                     id="phone"
                     name="phone"
                     value={formData.phone}
@@ -185,7 +202,7 @@ const Profile = () => {
                       </label>
                       <input
                         type="password"
-                        className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted"
+                        className="form-control rounded-1 shadow-none py-2 f_14 fw-semibold text-muted"
                         id="currentPassword"
                         name="currentPassword"
                         value={formData.currentPassword}
@@ -198,7 +215,7 @@ const Profile = () => {
                       </label>
                       <input
                         type="password"
-                        className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted"
+                        className="form-control rounded-1 shadow-none py-2 f_14 fw-semibold text-muted"
                         id="newPassword"
                         name="newPassword"
                         value={formData.newPassword}
@@ -211,7 +228,7 @@ const Profile = () => {
                       </label>
                       <input
                         type="password"
-                        className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted"
+                        className="form-control rounded-1 shadow-none py-2 f_14 fw-semibold text-muted"
                         id="confirmPassword"
                         name="confirmPassword"
                         value={formData.confirmPassword}
@@ -222,7 +239,7 @@ const Profile = () => {
                 )}
 
                 <div className="d-grid">
-                  <button type="submit" className="btn bg-blue text-light f_14 rounded-4 fw-semibold" disabled={updating}>
+                  <button type="submit" className="btn bg-blue text-light f_14 rounded-1 fw-semibold" disabled={updating}>
                     {updating ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2"></span>

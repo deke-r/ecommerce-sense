@@ -6,9 +6,9 @@
   min-height: 400px;
 }
 
-/* Breadcrumb Styles */
+/* Breadcrumb Styles - Flipkart style */
 .breadcrumbNav {
-  margin-bottom: 2rem;
+  margin-bottom: 20px;
 }
 
 .breadcrumb {
@@ -17,7 +17,6 @@
   padding: 12px 16px;
   margin: 0;
   background: #fff;
-  border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e0e0e0;
 }
@@ -25,32 +24,38 @@
 .breadcrumbItem {
   display: flex;
   align-items: center;
+  font-size: 14px;
 }
 
 .breadcrumbItem:not(:last-child)::after {
-  content: '/';
-  margin: 0 0.5rem;
-  color: #6c757d;
+  content: "›";
+  margin: 0 8px;
+  color: #878787;
+  font-size: 14px;
 }
 
 .breadcrumbLink {
   background: none;
   border: none;
-  color: #007bff;
+  color: #2874f0;
   text-decoration: none;
+  font-weight: 500;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
   cursor: pointer;
-  padding: 0;
   font-size: 14px;
 }
 
 .breadcrumbLink:hover {
-  text-decoration: underline;
+  background-color: #f0f8ff;
+  color: #1e3fb8;
 }
 
-.active {
-  color: #6c757d;
-  font-size: 14px;
+.breadcrumbItem.active {
+  color: #212121;
+  font-weight: 500;
 }
+
 
 /* Page Title */
 .pageTitle {
@@ -70,7 +75,6 @@
 .wishlistItem {
   position: relative;
   background: white;
-  border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;

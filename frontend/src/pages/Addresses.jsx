@@ -162,7 +162,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
   }
 
   return (
-    <div className={`container`}>
+    <div className={`container mt-2`}>
       {alert.show && (
         <div
           className={`alert alert-${alert.type === "error" ? "danger" : "success"} alert-dismissible fade show ${styles.alertCustom}`}
@@ -177,14 +177,32 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
         </div>
       )}
 
-      <div className={`rounded-0 shadow-sm ${styles.header}`}>
-        <div className="d-flex justify-content-between align-items-center">
-          <h4 className={styles.pageTitle}>Delivery Address</h4>
-          <button className='btn text-dark border-1 border border-dark f_14 rounded-4 fw-semibold' onClick={handleAddAddress}>
-            + Add New Address
-          </button>
-        </div>
+
+
+
+      <div className="row mx-md-2">
+        <nav aria-label="breadcrumb" className={styles.breadcrumbNav}>
+          <ol className={styles.breadcrumb + " d-flex align-items-center"} style={{ marginBottom: 0 }}>
+            <li className={styles.breadcrumbItem}>
+              <button className={styles.breadcrumbLink} onClick={() => navigate("/")}>
+                Home
+              </button>
+            </li>
+            <li className={`${styles.breadcrumbItem} ${styles.active}`}>
+              Addresses
+            </li>
+
+            <li className="ms-auto">
+              <button className='btn text-dark  f_14 rounded-4 fw-semibold' onClick={handleAddAddress}>
+                + Add New Address
+              </button>
+            </li>
+
+          </ol>
+        </nav>
       </div>
+
+<div className="row mx-md-2">
 
       {addresses.length === 0 ? (
         <div className={`text-center py-5 ${styles.emptyState}`}>
@@ -203,8 +221,8 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
               {addresses
                 .filter((address) => address.is_default)
                 .map((address) => (
-                  <div 
-                    key={address.id} 
+                  <div
+                    key={address.id}
                     className={`rounded-0 ${styles.addressCard}`}
                   >
                     <div className={styles.addressContent}>
@@ -256,8 +274,8 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
               {addresses
                 .filter((address) => !address.is_default)
                 .map((address) => (
-                  <div 
-                    key={address.id} 
+                  <div
+                    key={address.id}
                     className={`${styles.addressCard} text-capitalize rounded-0`}
                   >
                     <div className={styles.addressContent}>
@@ -313,6 +331,8 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
           )}
         </div>
       )}
+
+</div>
 
       {showModal && (
         <div className={`modal show d-block ${styles.modalOverlay}`} tabIndex="-1">
