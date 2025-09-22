@@ -162,7 +162,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
   }
 
   return (
-    <div className={`container mt-4 ${styles.addressesContainer}`}>
+    <div className={`container`}>
       {alert.show && (
         <div
           className={`alert alert-${alert.type === "error" ? "danger" : "success"} alert-dismissible fade show ${styles.alertCustom}`}
@@ -177,7 +177,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
         </div>
       )}
 
-      <div className={`rounded-4 ${styles.header}`}>
+      <div className={`rounded-0 shadow-sm ${styles.header}`}>
         <div className="d-flex justify-content-between align-items-center">
           <h4 className={styles.pageTitle}>Delivery Address</h4>
           <button className='btn text-dark border-1 border border-dark f_14 rounded-4 fw-semibold' onClick={handleAddAddress}>
@@ -205,7 +205,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
                 .map((address) => (
                   <div 
                     key={address.id} 
-                    className={`rounded-4 ${styles.addressCard}`}
+                    className={`rounded-0 ${styles.addressCard}`}
                   >
                     <div className={styles.addressContent}>
                       <div className="d-flex justify-content-between align-items-start">
@@ -213,14 +213,14 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
                           <div className={styles.nameSection}>
                             <span className={`${styles.addressName} text-capitalize`}>{address.full_name}</span>
                           </div>
-                          <div className={`${styles.addressDetails} text-capitalize`}>
+                          <div className={`${styles.addressDetails} text-capitalize f_13 fw-semibold`}>
                             <div>{address.street}</div>
                             <div>{address.landmark}</div>
                             <div>
                               {address.city} - {address.pincode}
                             </div>
                             <div>{address.state}</div>
-                            <div className={`${styles.phoneNumber} text-capitalize`}>
+                            <div className={`${styles.phoneNumber} text-capitalize f_13 fw-semibold`}>
                               Mobile: {address.phone}
                             </div>
                           </div>
@@ -258,7 +258,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
                 .map((address) => (
                   <div 
                     key={address.id} 
-                    className={`${styles.addressCard} text-capitalize`}
+                    className={`${styles.addressCard} text-capitalize rounded-0`}
                   >
                     <div className={styles.addressContent}>
                       <div className="d-flex justify-content-between align-items-start">
@@ -268,14 +268,14 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
                               {address.full_name}
                             </span>
                           </div>
-                          <div className={`${styles.addressDetails} text-capitalize`}>
+                          <div className={`${styles.addressDetails} text-capitalize f_13 fw-semibold`}>
                             <div>{address.street}</div>
                             <div>{address.landmark}</div>
                             <div>
                               {address.city} - {address.pincode}
                             </div>
                             <div>{address.state}</div>
-                            <div className={`${styles.phoneNumber} text-capitalize`}>
+                            <div className={`${styles.phoneNumber} text-capitalize f_13 fw-semibold`}>
                               Mobile: {address.phone}
                             </div>
                             <span
@@ -329,7 +329,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
                       <label className="form-label ms-2 f_14 fw-semibold">Full Name *</label>
                       <input
                         type="text"
-                        className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.full_name ? "is-invalid" : ""}`}
+                        className={`form-control rounded-2 shadow-none py-2 f_14 fw-semibold text-muted ${errors.full_name ? "is-invalid" : ""}`}
                         {...register("full_name", { required: "Full name is required" })}
                       />
                       {errors.full_name && <div className="invalid-feedback">{errors.full_name.message}</div>}
@@ -338,7 +338,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
                       <label className="form-label ms-2 f_14 fw-semibold">Phone Number *</label>
                       <input
                         type="tel"
-                        className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.phone ? "is-invalid" : ""}`}
+                        className={`form-control rounded-2 shadow-none py-2 f_14 fw-semibold text-muted ${errors.phone ? "is-invalid" : ""}`}
                         {...register("phone", {
                           required: "Phone number is required",
                           pattern: {
@@ -354,7 +354,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
                   <div className="mb-3">
                     <label className="form-label ms-2 f_14 fw-semibold">Street Address *</label>
                     <textarea
-                      className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.street ? "is-invalid" : ""}`}
+                      className={`form-control rounded-2 shadow-none py-2 f_14 fw-semibold text-muted ${errors.street ? "is-invalid" : ""}`}
                       rows="2"
                       {...register("street", { required: "Street address is required" })}
                     ></textarea>
@@ -363,7 +363,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
 
                   <div className="mb-3">
                     <label className="form-label ms-2 f_14 fw-semibold">Landmark (Optional)</label>
-                    <input type="text" className="form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted" {...register("landmark")} />
+                    <input type="text" className="form-control rounded-2 shadow-none py-2 f_14 fw-semibold text-muted" {...register("landmark")} />
                   </div>
 
                   <div className="row">
@@ -371,7 +371,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
                       <label className="form-label ms-2 f_14 fw-semibold">City *</label>
                       <input
                         type="text"
-                        className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.city ? "is-invalid" : ""}`}
+                        className={`form-control rounded-2 shadow-none py-2 f_14 fw-semibold text-muted ${errors.city ? "is-invalid" : ""}`}
                         {...register("city", { required: "City is required" })}
                       />
                       {errors.city && <div className="invalid-feedback">{errors.city.message}</div>}
@@ -380,7 +380,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
                       <label className="form-label ms-2 f_14 fw-semibold">State *</label>
                       <input
                         type="text"
-                        className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.state ? "is-invalid" : ""}`}
+                        className={`form-control rounded-2 shadow-none py-2 f_14 fw-semibold text-muted ${errors.state ? "is-invalid" : ""}`}
                         {...register("state", { required: "State is required" })}
                       />
                       {errors.state && <div className="invalid-feedback">{errors.state.message}</div>}
@@ -389,7 +389,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
                       <label className="form-label ms-2 f_14 fw-semibold">Pincode *</label>
                       <input
                         type="text"
-                        className={`form-control rounded-4 shadow-none py-2 f_14 fw-semibold text-muted ${errors.pincode ? "is-invalid" : ""}`}
+                        className={`form-control rounded-2 shadow-none py-2 f_14 fw-semibold text-muted ${errors.pincode ? "is-invalid" : ""}`}
                         {...register("pincode", {
                           required: "Pincode is required",
                           pattern: {
@@ -403,7 +403,7 @@ const Addresses = ({ onAddressSelect, selectedAddress }) => {
                   </div>
                 </div>
                 <div className={`modal-footer ${styles.modalFooter}`}>
-                  <button type="submit" className='btn bg-blue text-light f_14 rounded-4 fw-semibold w-100'>
+                  <button type="submit" className='btn bg-blue text-light f_14 rounded-2 fw-semibold w-100'>
                     {editingAddress ? "Update Address" : "Add Address"}
                   </button>
                 </div>

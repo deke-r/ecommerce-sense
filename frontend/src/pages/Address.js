@@ -129,18 +129,18 @@ const Address = () => {
           />
           
           {/* Coupon Code Section */}
-          <CouponCode 
+          {/* <CouponCode 
             orderAmount={calculateSubtotal()}
             onCouponApplied={handleCouponApplied}
             appliedCoupon={appliedCoupon}
             onRemoveCoupon={handleRemoveCoupon}
-          />
+          /> */}
         </div>
 
         <div className="col-lg-4">
-          <div className="card">
+          <div className="card rounded-0 shadow-sm">
             <div className="card-header">
-              <h5 className="mb-0">Order Summary</h5>
+              <h5 className="mb-0 f_16 fw-semibold">Order Summary</h5>
             </div>
             <div className="card-body">
               {cartItems.length === 0 ? (
@@ -157,7 +157,7 @@ const Address = () => {
                 <>
                   {/* Cart Items */}
                   <div className="mb-3">
-                    <h6>Items ({cartItems.length})</h6>
+                    {/* <h6 className="f_14 fw-semibold">Items ({cartItems.length})</h6> */}
                     <div className="max-height-300 overflow-auto">
                       {cartItems.map((item) => (
                         <div key={item.id} className="d-flex align-items-center mb-2 pb-2 border-bottom">
@@ -168,10 +168,10 @@ const Address = () => {
                             style={{ width: '40px', height: '40px', objectFit: 'cover' }}
                           />
                           <div className="flex-grow-1">
-                            <div className="fw-semibold text-capitalize" style={{ fontSize: '0.9rem' }}>
+                            <div className="fw-semibold f_13 fw-semibold text-capitalize" style={{ fontSize: '0.9rem' }}>
                               {item.title}
                             </div>
-                            <div className="text-muted" style={{ fontSize: '0.8rem' }}>
+                            <div className="text-muted f_13 fw-semibold" style={{ fontSize: '0.8rem' }}>
                               Qty: {item.quantity} × ₹{item.price}
                               {(item.selected_size || item.selected_color) && (
                                 <>
@@ -193,22 +193,22 @@ const Address = () => {
 
                   {/* Price Breakdown */}
                   <div className="mb-3">
-                    <div className="d-flex justify-content-between mb-1">
+                    <div className="d-flex justify-content-between mb-1 f_15 fw-semibold">
                       <span>Subtotal:</span>
                       <span>₹{calculateSubtotal()}</span>
                     </div>
-                    <div className="d-flex justify-content-between mb-1">
+                    <div className="d-flex justify-content-between mb-1 f_15 fw-semibold">
                       <span>Tax (10%):</span>
                       <span>₹{calculateTax()}</span>
                     </div>
                     {discountAmount > 0 && (
-                      <div className="d-flex justify-content-between mb-1 text-success">
+                      <div className="d-flex justify-content-between mb-1 text-success f_15 fw-semibold">
                         <span>Discount ({appliedCoupon?.code}):</span>
                         <span>-₹{discountAmount.toFixed(2)}</span>
                       </div>
                     )}
                     <hr />
-                    <div className="d-flex justify-content-between mb-3">
+                    <div className="d-flex justify-content-between mb-3 f_15">
                       <strong>Total:</strong>
                       <strong>₹{calculateTotal()}</strong>
                     </div>
@@ -217,10 +217,10 @@ const Address = () => {
                   {/* Selected Address */}
                   {selectedAddress && (
                     <div className="mb-3">
-                      <h6>Delivery Address</h6>
+                      <h6 className="f_14 fw-semibold">Delivery Address</h6>
                       <div className="bg-light p-2 rounded">
                         <div className="fw-semibold text-capitalize">{selectedAddress.full_name}</div>
-                        <div className="text-muted text-capitalize" style={{ fontSize: '0.9rem' }}>
+                        <div className="text-muted text-capitalize f_13 fw-semibold" style={{ fontSize: '0.9rem' }}>
                           {selectedAddress.street}<br />
                           {selectedAddress.landmark && `${selectedAddress.landmark}, `}
                           {selectedAddress.city} - {selectedAddress.pincode}<br />
@@ -234,7 +234,7 @@ const Address = () => {
                   {/* Action Buttons */}
                   <div className="d-grid gap-2">
                     <button
-                      className="btn btn-success btn-lg"
+                      className="btn rounded-1 btn-primary btn-lg f_14 fw-semibold"
                       onClick={handleProceedToPayment}
                       disabled={!selectedAddress || cartItems.length === 0}
                     >
@@ -242,7 +242,7 @@ const Address = () => {
                       Proceed to Payment
                     </button>
                     <button 
-                      className="btn btn-outline-secondary" 
+                      className="btn rounded-1 f_14 fw-semibold btn-outline-secondary" 
                       onClick={() => navigate("/cart")}
                     >
                       <i className="bi bi-arrow-left me-2"></i>
