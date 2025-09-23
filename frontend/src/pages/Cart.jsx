@@ -180,10 +180,18 @@ const Cart = () => {
                         src={`${process.env.REACT_APP_IMAGE_URL}${item.image}`}
                         alt={item.title}
                         className="cart-item-image rounded"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => navigate(`/product/${item.product_id}`)}
                       />
                     </div>
                     <div className="col-md-4">
-                      <h6 className="mb-1 text-capitalize f_14 fw-semibold">{item.title}</h6>
+                      <h6
+                        className="mb-1 text-capitalize f_14 fw-semibold"
+                        style={{ cursor: "pointer", textDecoration: "none" }}
+                        onClick={() => navigate(`/product/${item.product_id}`)}
+                      >
+                        {item.title}
+                      </h6>
                       <p className="text-muted mb-0 f_14 fw-semibold">₹{item.price}</p>
                       <div className="mt-1 f_12 fw-semibold">
                         {getStockStatus(item)}

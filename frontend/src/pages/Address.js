@@ -102,7 +102,7 @@ const Address = () => {
       appliedCoupon: appliedCoupon,
       total: calculateTotal()
     }
-    
+
     localStorage.setItem('orderData', JSON.stringify(orderData))
     navigate("/payment")
   }
@@ -123,11 +123,11 @@ const Address = () => {
     <div className="container-fluid">
       <div className="row">
         <div className="col-lg-8">
-          <Addresses 
+          <Addresses
             onAddressSelect={handleAddressSelect}
             selectedAddress={selectedAddress}
           />
-          
+
           {/* Coupon Code Section */}
           {/* <CouponCode 
             orderAmount={calculateSubtotal()}
@@ -146,8 +146,8 @@ const Address = () => {
               {cartItems.length === 0 ? (
                 <div className="text-center py-3">
                   <p className="text-muted">Your cart is empty</p>
-                  <button 
-                    className="btn btn-primary" 
+                  <button
+                    className="btn btn-primary"
                     onClick={() => navigate("/cart")}
                   >
                     Go to Cart
@@ -165,10 +165,15 @@ const Address = () => {
                             src={`${process.env.REACT_APP_IMAGE_URL}${item.image}`}
                             alt={item.title}
                             className="rounded me-2"
-                            style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+                            style={{ width: '40px', height: '40px', objectFit: 'cover', cursor: 'pointer' }}
+                            onClick={() => navigate(`/product/${item.product_id}`)}
                           />
                           <div className="flex-grow-1">
-                            <div className="fw-semibold f_13 fw-semibold text-capitalize" style={{ fontSize: '0.9rem' }}>
+                            <div
+                              className="fw-semibold f_13 text-capitalize"
+                              style={{ fontSize: '0.9rem', cursor: 'pointer', textDecoration: 'none' }}
+                              onClick={() => navigate(`/product/${item.product_id}`)}
+                            >
                               {item.title}
                             </div>
                             <div className="text-muted f_13 fw-semibold" style={{ fontSize: '0.8rem' }}>
@@ -241,8 +246,8 @@ const Address = () => {
                       <i className="bi bi-credit-card me-2"></i>
                       Proceed to Payment
                     </button>
-                    <button 
-                      className="btn rounded-1 f_14 fw-semibold btn-outline-secondary" 
+                    <button
+                      className="btn rounded-1 f_14 fw-semibold btn-outline-secondary"
                       onClick={() => navigate("/cart")}
                     >
                       <i className="bi bi-arrow-left me-2"></i>

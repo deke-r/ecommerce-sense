@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react"
 import { ordersAPI } from "../services/api"
 import styles from "../style/ProductDetails.module.css"
+import { useNavigate } from "react-router-dom"
 
 const Orders = () => {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
-
+  const navigate = useNavigate()
   useEffect(() => {
     fetchOrders()
   }, [])
